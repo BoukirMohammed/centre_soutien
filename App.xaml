@@ -1,0 +1,40 @@
+﻿<Application x:Class="centre_soutien.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:centre_soutien"
+             xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
+             xmlns:views="clr-namespace:centre_soutien.Views"
+             xmlns:converters="clr-namespace:centre_soutien.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        
+        <DataTemplate DataType="{x:Type viewModels:SalleViewModel}">
+            <views:GestionSallesView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type viewModels:ProfesseurViewModel}">
+            <views:GestionProfesseursView/>
+        </DataTemplate>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        
+
+
+        <DataTemplate DataType="{x:Type viewModels:MatiereViewModel}">
+            <views:GestionMatieresView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:EtudiantViewModel}">
+            <views:GestionEtudiantsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:GroupeViewModel}">
+            <views:GestionGroupesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:InscriptionViewModel}">
+            <views:GestionInscriptionsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PlanningViewModel}">
+            <views:PlanningView/>
+        </DataTemplate>
+
+    </Application.Resources>
+</Application>

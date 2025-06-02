@@ -1,0 +1,120 @@
+﻿<Window x:Class="centre_soutien.Views.AddInscriptionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:centre_soutien.Views"
+        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+        mc:Ignorable="d"
+        Title="Nouvelle Inscription" Height="480" Width="520"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
+        FontFamily="Segoe UI" Background="#F5F5F5"> <!-- Ajout de FontFamily et d'un fond léger -->
+
+    <Window.Resources>
+        <!-- Styles communs (inspirés de GestionMatieresView) -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Margin" Value="0 5"/>
+            <Setter Property="MinWidth" Value="100"/> <!-- Augmenté par rapport à votre MinWidth de 80 pour cohérence -->
+            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF4A6FA5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5"/> <!-- Garde la marge de 5 de tous les côtés pour alignement avec les TextBox/ComboBox -->
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    
+    <!-- DataContext pour le design-time -->
+    <d:Window.DataContext>
+        <viewModels:AddInscriptionViewModel/>
+    </d:Window.DataContext>
+
+    <Border BorderBrush="#FF3A4F7A" BorderThickness="1" Margin="10"> <!-- Encadrement général optionnel -->
+        <Grid Margin="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Etudiant -->
+                <RowDefinition Height="Auto"/> <!-- Groupe -->
+                <RowDefinition Height="Auto"/> <!-- Prix Convenu -->
+                <RowDefinition Height="Auto"/> <!-- Jour Echeance -->
+                <RowDefinition Height="Auto"/> <!-- Message Statut -->
+                <RowDefinition Height="*"/>    <!-- Espace -->
+                <RowDefinition Height="Auto"/> <!-- Boutons -->
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="120"/> <!-- MinWidth pour les Labels -->
+                <ColumnDefinition Width="*"/>    <!-- Controls -->
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Content="Étudiant:"/>
+            <ComboBox Grid.Row="0" Grid.Column="1"
+                      ItemsSource="{Binding AllEtudiants}"
+                      SelectedItem="{Binding SelectedEtudiant, Mode=TwoWay}"
+                      DisplayMemberPath="NomComplet"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Groupe:"/>
+            <ComboBox Grid.Row="1" Grid.Column="1"
+                      ItemsSource="{Binding AllGroupes}"
+                      SelectedItem="{Binding SelectedGroupe, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding NomDescriptifGroupe}" FontWeight="Bold"/>
+                            <TextBlock Text=" (" Margin="5,0,0,0"/>
+                            <TextBlock Text="{Binding Matiere.NomMatiere}"/>
+                            <TextBlock Text=" - Prof: "/>
+                            <TextBlock Text="{Binding Professeur.NomComplet}"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Label Grid.Row="2" Grid.Column="0" Content="Prix Convenu (€):"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PrixConvenuInput, UpdateSourceTrigger=PropertyChanged, StringFormat=N2, ValidatesOnExceptions=True, NotifyOnValidationError=True}"/>
+
+            <Label Grid.Row="3" Grid.Column="0" Content="Jour Échéance:"/> <!-- Texte simplifié -->
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding JourEcheanceInput, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, NotifyOnValidationError=True}" ToolTip="Jour du mois pour l'échéance (1-31)"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" 
+                       Text="{Binding StatusMessage}" 
+                       Foreground="Red" FontWeight="SemiBold" Margin="5 10 5 5" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+
+            <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
+                <Button Content="Inscrire" Command="{Binding InscrireCommand}" IsDefault="True" Margin="0 0 10 0"/>
+                <!-- Le style Button s'appliquera, y compris MinWidth et Padding. IsCancel ferme la fenêtre. -->
+                <Button Content="Annuler" IsCancel="True"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,95 @@
+﻿<Window x:Class="centre_soutien.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:centre_soutien"
+        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
+        mc:Ignorable="d"
+        Title="Gestion Centre de Soutien Scolaire" Height="700" Width="950"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <!-- Style pour les boutons du menu -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="10,8"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#80FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#40FFFFFF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <viewModels:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Menu de Navigation - Version corrigée -->
+        <Border Grid.Column="0" BorderBrush="#FFD0D0D0" BorderThickness="0,0,1,0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#FF3A4F7A" Offset="0"/>
+                    <GradientStop Color="#FF4A6FA5" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            
+            <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                <TextBlock Text="MENU PRINCIPAL" 
+                           FontSize="18" 
+                           FontWeight="SemiBold" 
+                           Margin="0,0,0,25" 
+                           HorizontalAlignment="Center"
+                           Foreground="White"/>
+                
+                <Button Content="Gestion des Salles" Command="{Binding ShowSallesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Gestion des Matières" Command="{Binding ShowMatieresViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Gestion des Professeurs" Command="{Binding ShowProfesseursViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Gestion des Étudiants" Command="{Binding ShowEtudiantsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Gestion des Groupes" Command="{Binding ShowGroupesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Planning" Command="{Binding ShowPlanningViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                <Button Content="Inscriptions" Command="{Binding ShowInscriptionsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                
+                <Border Height="1" Background="#60FFFFFF" Margin="15,20"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenu Principal -->
+        <Border Grid.Column="1" Padding="20" Background="White">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
+            </Border.Effect>
+            <ContentControl Content="{Binding CurrentViewViewModel}"/>
+        </Border>
+    </Grid>
+</Window>

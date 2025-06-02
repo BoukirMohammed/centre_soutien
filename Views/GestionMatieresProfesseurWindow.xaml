@@ -1,0 +1,72 @@
+﻿<Window x:Class="centre_soutien.Views.GestionMatieresProfesseurWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:centre_soutien.Views"
+        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+        mc:Ignorable="d"
+        Title="Gérer Matières et Rémunération du Professeur" Height="500" Width="600"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+
+    <!-- DataContext de design-time (optionnel, le vrai sera injecté) -->
+    <!-- 
+    <d:Window.DataContext>
+        <viewModels:GestionMatieresProfesseurViewModel ProfesseurId="1" 
+                                                       ProfRepo="{Binding Source={x:Null}}" 
+                                                       MatRepo="{Binding Source={x:Null}}" 
+                                                       ProfMatRepo="{Binding Source={x:Null}}"/>
+    </d:Window.DataContext>
+    -->
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Titre/Info Professeur -->
+            <RowDefinition Height="*"/>    <!-- Liste des Matières -->
+            <RowDefinition Height="Auto"/> <!-- Message Statut -->
+            <RowDefinition Height="Auto"/> <!-- Boutons -->
+        </Grid.RowDefinitions>
+
+        <!-- Optionnel: Afficher le nom du professeur si chargé dans le ViewModel -->
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,10" FontSize="16" FontWeight="SemiBold">
+            <Run Text="Matières pour : "/>
+            <Run Text="{Binding CurrentProfesseur.NomComplet, FallbackValue='Professeur non chargé'}" />
+        </TextBlock>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+            <ItemsControl ItemsSource="{Binding MatieresPourProfesseur}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Padding="5" Margin="0,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/> <!-- CheckBox -->
+                                    <ColumnDefinition Width="*"/>    <!-- Nom Matière -->
+                                    <ColumnDefinition Width="Auto"/> <!-- Label Pourcentage -->
+                                    <ColumnDefinition Width="80"/>   <!-- TextBox Pourcentage -->
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox Grid.Column="0" IsChecked="{Binding EstEnseignee, Mode=TwoWay}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding NomMatiere}" VerticalAlignment="Center" Margin="10,0"/>
+                                
+                                <Label Grid.Column="2" Content="Rémunération (%):" VerticalAlignment="Center" 
+                                       IsEnabled="{Binding PeutSaisirPourcentage}" Margin="10,0,5,0"/>
+                                <TextBox Grid.Column="3" VerticalAlignment="Center"
+                                         Text="{Binding PourcentageRemuneration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N0, ValidatesOnExceptions=True}" 
+                                         IsEnabled="{Binding PeutSaisirPourcentage}"
+                                         Width="60" HorizontalContentAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Foreground="Red" Margin="5" TextWrapping="Wrap"/>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Enregistrer" Command="{Binding SaveChangesCommand}" IsDefault="True" MinWidth="100" Margin="0,0,10,0" Padding="10,5"/>
+            <Button Content="Annuler" IsCancel="True" MinWidth="80" Padding="10,5"/>
+        </StackPanel>
+    </Grid>
+</Window>
