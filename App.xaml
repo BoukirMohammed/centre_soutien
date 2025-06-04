@@ -5,7 +5,8 @@
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
              xmlns:views="clr-namespace:centre_soutien.Views"
              xmlns:converters="clr-namespace:centre_soutien.Converters"
-             StartupUri="Views/MainWindow.xaml">
+             ShutdownMode="OnExplicitShutdown"
+             >
     <Application.Resources>
         
         <DataTemplate DataType="{x:Type viewModels:SalleViewModel}">
@@ -17,7 +18,8 @@
         </DataTemplate>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
-        
+        <converters:IsNullConverter x:Key="IsNullConverter"/>
+        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
 
 
         <DataTemplate DataType="{x:Type viewModels:MatiereViewModel}">
@@ -34,6 +36,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:PlanningViewModel}">
             <views:PlanningView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:GestionUtilisateursViewModel}">
+            <views:GestionUtilisateursView/>
         </DataTemplate>
 
     </Application.Resources>

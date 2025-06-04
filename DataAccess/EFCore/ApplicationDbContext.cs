@@ -3,6 +3,8 @@ using centre_soutien.Models; // Assure-toi que ce using pointe vers tes modèles
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using centre_soutien.Helpers; // <<<< AJOUTE CE USING POUR PASSWORDHASHER
+using System;   
 
 namespace centre_soutien.DataAccess // Ajuste le namespace si nécessaire
 {
@@ -10,6 +12,7 @@ namespace centre_soutien.DataAccess // Ajuste le namespace si nécessaire
     {
         // DbSet pour chaque entité/table
         public DbSet<Utilisateur> Utilisateurs { get; set; }
+        const string PRECOMPUTED_ADMIN_PASSWORD_HASH = "nlJFt6/bDjrGLBcd/oJoeQ==;100000;xhvXeJWxAJ/AinHfJbYjDkQAtafY6NjGmgejFvxCL4I=";
         public DbSet<Etudiant> Etudiants { get; set; }
         public DbSet<Professeur> Professeurs { get; set; }
         public DbSet<Matiere> Matieres { get; set; }
@@ -54,6 +57,18 @@ namespace centre_soutien.DataAccess // Ajuste le namespace si nécessaire
                 entity.Property(e => e.Role).IsRequired();
                 // Les booléens sont gérés nativement par EF Core pour SQLite (INTEGER 0 ou 1)
             });
+            modelBuilder.Entity<Utilisateur>().HasData(
+                new Utilisateur
+                {
+                    IDUtilisateur = 1,
+                    Login = "admin",
+                    MotDePasseHashe = PRECOMPUTED_ADMIN_PASSWORD_HASH, // Utilise la constante
+                    Role = "Admin",
+                    NomComplet =
+                        "Administrateur Système", // Assure-toi que ton modèle Utilisateur a cette propriété et qu'elle peut être initialisée
+                    EstActif = true
+                }
+            );
 
             // Etudiants
             modelBuilder.Entity<Etudiant>(entity =>

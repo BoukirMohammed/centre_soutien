@@ -10,7 +10,9 @@ namespace centre_soutien // Assure-toi que le namespace est correct
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModels.MainViewModel();
+
+            // DataContext = new ViewModels.MainViewModel();
+            
         }
     }
 }

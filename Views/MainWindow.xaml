@@ -79,7 +79,8 @@
                 <Button Content="Gestion des Groupes" Command="{Binding ShowGroupesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
                 <Button Content="Planning" Command="{Binding ShowPlanningViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
                 <Button Content="Inscriptions" Command="{Binding ShowInscriptionsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                
+                <Button Content="Gestion Utilisateures" Command="{Binding ShowGestionUtilisateursCommand}" Style="{StaticResource MenuButtonStyle}"/>
+
                 <Border Height="1" Background="#60FFFFFF" Margin="15,20"/>
             </StackPanel>
         </Border>

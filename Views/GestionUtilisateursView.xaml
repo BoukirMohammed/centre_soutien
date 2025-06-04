@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="centre_soutien.Views.GestionUtilisateursView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:centre_soutien.Views"
+             xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <d:UserControl.DataContext>
+        <viewModels:GestionUtilisateursViewModel/>
+    </d:UserControl.DataContext>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Titre -->
+            <RowDefinition Height="*"/>    <!-- DataGrid -->
+            <RowDefinition Height="Auto"/> <!-- Formulaire -->
+            <RowDefinition Height="Auto"/> <!-- StatusBar -->
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Gestion des Utilisateurs de l'Application" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Utilisateurs}"
+                  SelectedItem="{Binding SelectedUtilisateur, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" Margin="0,0,0,10" VerticalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding IDUtilisateur, Mode=OneWay}" Width="50"/>
+                <DataGridTextColumn Header="Login" Binding="{Binding Login, Mode=OneWay}" Width="*"/>
+                <DataGridTextColumn Header="Nom Complet" Binding="{Binding NomComplet, Mode=OneWay}" Width="2*"/>
+                <DataGridTextColumn Header="Rôle" Binding="{Binding Role, Mode=OneWay}" Width="*"/>
+                <DataGridCheckBoxColumn Header="Actif" Binding="{Binding EstActif, Mode=OneWay}" Width="Auto"/>
+                <DataGridTemplateColumn Header="Actions" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DataContext.ToggleActivationButtonText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                    Command="{Binding DataContext.ToggleActivationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" 
+                                    Padding="5,2" Margin="2" FontSize="10"/>
+                            <!-- Tu pourrais ajouter un bouton "Changer MDP" ici aussi si tu veux une action par ligne -->
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+            <Grid x:Name="FormGrid" IsEnabled="{Binding IsEditing}"> <!-- Formulaire activé seulement en mode édition/ajout -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/> <!-- Labels -->
+                    <ColumnDefinition Width="*"/>    <!-- Controls -->
+                    <ColumnDefinition Width="150"/>  <!-- Boutons de formulaire -->
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Login -->
+                    <RowDefinition Height="Auto"/> <!-- Nom Complet -->
+                    <RowDefinition Height="Auto"/> <!-- Rôle -->
+                    <RowDefinition Height="Auto"/> <!-- Mot de Passe (pour ajout/changement) -->
+                    <RowDefinition Height="Auto"/> <!-- Actif -->
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Login:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LoginInput, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5"
+                         IsEnabled="{Binding Path=SelectedUtilisateur, Converter={StaticResource IsNullConverter}}"/> <!-- Editable seulement à l'ajout -->
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Nom Complet:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NomCompletInput, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Rôle:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" Padding="5"
+                          ItemsSource="{Binding RolesDisponibles}"
+                          SelectedItem="{Binding SelectedRoleInput, Mode=TwoWay}"/>
+                
+                <!-- Section Mot de Passe - Visible seulement à l'ajout ou si on clique sur "Changer MDP" (logique à affiner) -->
+                <Label Grid.Row="3" Grid.Column="0" Content="Mot de Passe:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <PasswordBox x:Name="UserPasswordBoxForm" Grid.Row="3" Grid.Column="1" Margin="5" Padding="5"
+                             ToolTip="Entrez un nouveau mot de passe pour un nouvel utilisateur ou pour changer le mot de passe existant."/>
+
+                <CheckBox Grid.Row="4" Grid.Column="1" Content="Compte Actif" IsChecked="{Binding IsActifInput}" VerticalAlignment="Center" Margin="5"/>
+
+                <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" Orientation="Vertical" Margin="10,0,0,0" VerticalAlignment="Top">
+                    <Button Content="Sauvegarder" Command="{Binding SaveUtilisateurCommand}" 
+                            CommandParameter="{Binding ElementName=UserPasswordBoxForm}" Margin="0,5" Padding="5"/>
+                    <Button Content="Changer Mot de Passe" Command="{Binding ChangePasswordCommand}"
+                            CommandParameter="{Binding ElementName=UserPasswordBoxForm}" Margin="0,5" Padding="5"
+                            IsEnabled="{Binding Path=SelectedUtilisateur, Converter={StaticResource IsNotNullConverter}}"/> <!-- Actif si un user est sélectionné -->
+                    <Button Content="Annuler" Command="{Binding CancelEditCommand}" Margin="0,15,0,5" Padding="5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Bouton pour passer en mode ajout, en dehors du formulaire principal qui est désactivé par défaut -->
+        <Button Grid.Row="2" Content="Nouvel Utilisateur" Command="{Binding PrepareAddUtilisateurCommand}" 
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,-30" Padding="10,5"/> <!-- Ajuster la marge pour le positionnement -->
+
+
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</UserControl>
