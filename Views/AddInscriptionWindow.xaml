@@ -6,115 +6,267 @@
         xmlns:local="clr-namespace:centre_soutien.Views"
         xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
         mc:Ignorable="d"
-        Title="Nouvelle Inscription" Height="480" Width="520"
+        Title="Nouvelle Inscription" Height="550" Width="600"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
-        FontFamily="Segoe UI" Background="#F5F5F5"> <!-- Ajout de FontFamily et d'un fond léger -->
+        FontFamily="Segoe UI"
+        KeyDown="Window_KeyDown">
 
     <Window.Resources>
-        <!-- Styles communs (inspirés de GestionMatieresView) -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="10 5"/>
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="MinWidth" Value="100"/> <!-- Augmenté par rapport à votre MinWidth de 80 pour cohérence -->
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour boutons -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 12"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
+        <!-- Style pour TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="12 10"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Style pour ComboBox -->
         <Style TargetType="ComboBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="12 10"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="40"/>
         </Style>
 
+        <!-- Style pour Labels -->
         <Style TargetType="Label">
-            <Setter Property="Margin" Value="5"/> <!-- Garde la marge de 5 de tous les côtés pour alignement avec les TextBox/ComboBox -->
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
+
+        <!-- Convertisseurs nécessaires pour cette fenêtre -->
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Window.Resources>
     
-    <!-- DataContext pour le design-time -->
     <d:Window.DataContext>
         <viewModels:AddInscriptionViewModel/>
     </d:Window.DataContext>
 
-    <Border BorderBrush="#FF3A4F7A" BorderThickness="1" Margin="10"> <!-- Encadrement général optionnel -->
-        <Grid Margin="15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Etudiant -->
-                <RowDefinition Height="Auto"/> <!-- Groupe -->
-                <RowDefinition Height="Auto"/> <!-- Prix Convenu -->
-                <RowDefinition Height="Auto"/> <!-- Jour Echeance -->
-                <RowDefinition Height="Auto"/> <!-- Message Statut -->
-                <RowDefinition Height="*"/>    <!-- Espace -->
-                <RowDefinition Height="Auto"/> <!-- Boutons -->
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="120"/> <!-- MinWidth pour les Labels -->
-                <ColumnDefinition Width="*"/>    <!-- Controls -->
-            </Grid.ColumnDefinitions>
+    <Grid>
+        <!-- Background avec gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
 
-            <Label Grid.Row="0" Grid.Column="0" Content="Étudiant:"/>
-            <ComboBox Grid.Row="0" Grid.Column="1"
-                      ItemsSource="{Binding AllEtudiants}"
-                      SelectedItem="{Binding SelectedEtudiant, Mode=TwoWay}"
-                      DisplayMemberPath="NomComplet"/>
+        <!-- ScrollViewer pour rendre tout accessible -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="20">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <Label Grid.Row="1" Grid.Column="0" Content="Groupe:"/>
-            <ComboBox Grid.Row="1" Grid.Column="1"
-                      ItemsSource="{Binding AllGroupes}"
-                      SelectedItem="{Binding SelectedGroupe, Mode=TwoWay}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding NomDescriptifGroupe}" FontWeight="Bold"/>
-                            <TextBlock Text=" (" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding Matiere.NomMatiere}"/>
-                            <TextBlock Text=" - Prof: "/>
-                            <TextBlock Text="{Binding Professeur.NomComplet}"/>
-                            <TextBlock Text=")"/>
+                <!-- En-tête moderne -->
+                <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="25 20" Margin="0 0 0 20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{StaticResource PrimaryGradient}" 
+                                Width="50" Height="50" 
+                                CornerRadius="25" 
+                                Margin="0 0 20 0">
+                            <TextBlock Text="📝" FontSize="24" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Nouvelle Inscription" 
+                                       FontSize="24" FontWeight="Bold" 
+                                       Foreground="#2d3748"/>
+                            <TextBlock Text="Inscrivez un étudiant à un groupe" 
+                                       FontSize="14" 
+                                       Foreground="#718096" 
+                                       Margin="0 4 0 0"/>
                         </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                    </StackPanel>
+                </Border>
 
-            <Label Grid.Row="2" Grid.Column="0" Content="Prix Convenu (€):"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PrixConvenuInput, UpdateSourceTrigger=PropertyChanged, StringFormat=N2, ValidatesOnExceptions=True, NotifyOnValidationError=True}"/>
+                <!-- Formulaire -->
+                <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="25" Margin="0 20 0 0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.15"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="130"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-            <Label Grid.Row="3" Grid.Column="0" Content="Jour Échéance:"/> <!-- Texte simplifié -->
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding JourEcheanceInput, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, NotifyOnValidationError=True}" ToolTip="Jour du mois pour l'échéance (1-31)"/>
+                        <!-- Étudiant -->
+                        <Label Grid.Row="0" Grid.Column="0" Content="Étudiant:"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1"
+                                  ItemsSource="{Binding AllEtudiants}"
+                                  SelectedItem="{Binding SelectedEtudiant, Mode=TwoWay}"
+                                  DisplayMemberPath="NomComplet"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" 
-                       Text="{Binding StatusMessage}" 
-                       Foreground="Red" FontWeight="SemiBold" Margin="5 10 5 5" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                        <!-- Groupe -->
+                        <Label Grid.Row="1" Grid.Column="0" Content="Groupe:"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1"
+                                  ItemsSource="{Binding AllGroupes}"
+                                  SelectedItem="{Binding SelectedGroupe, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding NomDescriptifGroupe}" FontWeight="SemiBold" Foreground="#2d3748"/>
+                                        <TextBlock Text=" • " Margin="8,0" Foreground="#a0aec0"/>
+                                        <TextBlock Text="{Binding Matiere.NomMatiere}" Foreground="#38a169" FontWeight="Medium"/>
+                                        <TextBlock Text=" • " Margin="8,0" Foreground="#a0aec0"/>
+                                        <TextBlock Text="{Binding Professeur.NomComplet}" Foreground="#4299e1"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-            <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
-                <Button Content="Inscrire" Command="{Binding InscrireCommand}" IsDefault="True" Margin="0 0 10 0"/>
-                <!-- Le style Button s'appliquera, y compris MinWidth et Padding. IsCancel ferme la fenêtre. -->
-                <Button Content="Annuler" IsCancel="True"/>
-            </StackPanel>
-        </Grid>
-    </Border>
+                        <!-- Prix Convenu -->
+                        <Label Grid.Row="2" Grid.Column="0" Content="Prix Convenu (DH):"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" 
+                                 Text="{Binding PrixConvenuInput, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
+                                 ToolTip="Prix mensuel convenu pour cette inscription"/>
+
+                        <!-- Jour Échéance -->
+                        <Label Grid.Row="3" Grid.Column="0" Content="Jour Échéance:"/>
+                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                            <TextBox Text="{Binding JourEcheanceInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="80" 
+                                     ToolTip="Jour du mois pour l'échéance (1-31)"/>
+                            <TextBlock Text="du mois" 
+                                       VerticalAlignment="Center" 
+                                       Margin="10,0,0,0" 
+                                       Foreground="#718096"/>
+                        </StackPanel>
+
+                        <!-- Message de statut -->
+                        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" 
+                                Background="#fff5f5" BorderBrush="#fed7d7" BorderThickness="1"
+                                CornerRadius="6" Padding="12" Margin="0,15,0,0"
+                                Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚠️" FontSize="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding StatusMessage}" 
+                                           Foreground="#e53e3e" FontWeight="Medium"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Boutons d'action -->
+                <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="20" Margin="0 20 0 10">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="#15000000" Opacity="0.2"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="💾 Inscrire" 
+                                Style="{StaticResource PrimaryButton}"
+                                Background="{StaticResource SuccessGradient}"
+                                Command="{Binding InscrireCommand}" 
+                                IsDefault="True" 
+                                Margin="0 0 15 0"/>
+                        <Button Content="❌ Annuler" 
+                                Style="{StaticResource PrimaryButton}"
+                                Background="{StaticResource DangerGradient}"
+                                IsCancel="True"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </Window>

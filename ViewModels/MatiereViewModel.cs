@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using centre_soutien.Services;
 
 namespace centre_soutien.ViewModels
 {
@@ -23,6 +24,7 @@ namespace centre_soutien.ViewModels
             get => _matieres;
             set { _matieres = value; OnPropertyChanged(); }
         }
+        public bool CanUserArchive => CurrentUserSession.IsAdmin; // Ou CurrentUserSession.IsAdmin || CurrentUserSession.IsSecretaire si la secrétaire peut aussi archiver certains types.
 
         private Matiere _selectedMatiere;
         public Matiere SelectedMatiere
@@ -92,7 +94,10 @@ namespace centre_soutien.ViewModels
             LoadMatieresCommand = new RelayCommand(async param => await LoadMatieresAsync());
             AddMatiereCommand = new RelayCommand(async param => await AddMatiereAsync(), CanAddOrUpdateMatiere);
             UpdateMatiereCommand = new RelayCommand(async param => await UpdateMatiereAsync(), CanUpdateOrArchiveMatiere);
-            ArchiveMatiereCommand = new RelayCommand(async param => await ArchiveMatiereAsync(), CanArchiveMatiere);
+            ArchiveMatiereCommand = new RelayCommand(
+                async param => await ArchiveMatiereAsync(),
+                param => SelectedMatiere != null && CanUserArchive // Le bouton ne s'active que si un étudiant est sélectionné ET l'utilisateur a le droit
+            );
             ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
 
             _ = LoadMatieresAsync();

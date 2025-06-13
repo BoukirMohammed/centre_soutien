@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using centre_soutien.Services;
 
 namespace centre_soutien.ViewModels
 {
@@ -16,6 +17,7 @@ namespace centre_soutien.ViewModels
     {
         public int IDMatiere { get; set; }
         public string NomMatiere { get; set; } = string.Empty;
+
 
         private bool _estEnseignee;
         public bool EstEnseignee

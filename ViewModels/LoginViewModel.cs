@@ -17,6 +17,7 @@ namespace centre_soutien.ViewModels
         private readonly UtilisateurRepository _utilisateurRepository;
 
         private string _loginInput = string.Empty;
+        
 
         public string LoginInput
         {

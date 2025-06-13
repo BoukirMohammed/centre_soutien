@@ -6,119 +6,334 @@
              xmlns:local="clr-namespace:centre_soutien.Views"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="900"
-             FontFamily="Segoe UI">
+             d:DesignHeight="700" d:DesignWidth="900"
+             FontFamily="Segoe UI"
+             KeyDown="UserControl_KeyDown"
+             Focusable="True">
 
     <UserControl.Resources>
-        <!-- Styles communs (inspirés de GestionMatieresView) -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="10 5"/>
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
-        <!-- Style pour le DataGrid -->
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="70"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour le DataGrid -->
         <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="0 0 0 15"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="RowHeight" Value="45"/>
         </Style>
 
+        <!-- Style moderne pour les en-têtes DataGrid -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Padding" Value="12 10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
-        
-        <!-- Style pour les TextBlocks (si nécessaire, mais le titre sera un cas particulier) -->
-        <!-- <Style TargetType="TextBlock"> -->
-        <!-- <Setter Property="Margin" Value="5"/> -->
-        <!-- </Style> -->
 
+        <!-- Convertisseurs -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
+        <!-- Convertisseur pour couleur de statut -->
+        <local:StatusToColorConverter x:Key="StatusColorConverter"/>
+        <local:StatusToTextConverter x:Key="StatusTextConverter"/>
+        
+        <!-- Convertisseur pour visibilité des chaînes -->
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        
+        <!-- Convertisseur pour dates string -->
+        <local:StringDateConverter x:Key="StringDateConverter"/>
     </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:InscriptionViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Titre et bouton "Nouvelle Inscription" -->
-            <RowDefinition Height="*"/>    <!-- DataGrid -->
-            <RowDefinition Height="Auto"/> <!-- Bouton "Désinscrire" -->
-            <RowDefinition Height="Auto"/> <!-- StatusBar -->
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Zone d'actions en haut (Titre + Bouton) -->
-        <Grid Grid.Row="0" Margin="0 0 0 15">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="📋" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Gestion des Inscriptions" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Gérez les inscriptions des étudiants aux groupes" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
 
-            <TextBlock Grid.Column="0" Text="Gestion des Inscriptions" 
-                       FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center"
-                       Foreground="#FF3A4F7A">
-                <TextBlock.Effect>
-                    <DropShadowEffect BlurRadius="5" ShadowDepth="1" Color="#20000000"/>
-                </TextBlock.Effect>
-            </TextBlock>
+            <!-- Bouton Nouvelle Inscription -->
+            <Button Grid.Row="1" Content="➕ Nouvelle Inscription" 
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalAlignment="Left"
+                    Margin="0 20 0 0"
+                    FontSize="15"
+                    Click="AddInscriptionButton_Click"
+                    x:Name="AddInscriptionButton"/>
 
-            <Button Grid.Column="1" Content="Nouvelle Inscription..." 
-                    Command="{Binding OpenAddInscriptionDialogCommand}" 
-                    VerticalAlignment="Center" MinWidth="150"/> <!-- Style de bouton s'applique -->
+            <!-- Tableau des inscriptions -->
+            <Border Grid.Row="2" Background="White" CornerRadius="12" Padding="2" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <DataGrid ItemsSource="{Binding Inscriptions}"
+                          SelectedItem="{Binding SelectedInscription, Mode=TwoWay}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Étudiant -->
+                        <DataGridTextColumn Header="Étudiant" Binding="{Binding Etudiant.NomComplet}" Width="180">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="12 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Groupe -->
+                        <DataGridTextColumn Header="Groupe" Binding="{Binding Groupe.NomDescriptifGroupe}" Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="12 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#4299e1"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Matière -->
+                        <DataGridTextColumn Header="Matière" Binding="{Binding Groupe.Matiere.NomMatiere}" Width="130">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="12 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#38a169"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Prix -->
+                        <DataGridTextColumn Header="Prix" Binding="{Binding PrixConvenuMensuel, StringFormat=C}" Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="12 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#e53e3e"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Date Inscription -->
+                        <DataGridTextColumn Header="Inscrit le" Binding="{Binding DateInscription, Converter={StaticResource StringDateConverter}}" Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="12 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Statut -->
+                        <DataGridTemplateColumn Header="Statut" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding EstActif, Converter={StaticResource StatusColorConverter}}" 
+                                            CornerRadius="10" Padding="8 4" Margin="5">
+                                        <TextBlock Text="{Binding EstActif, Converter={StaticResource StatusTextConverter}}" 
+                                                   Foreground="White" FontSize="10" FontWeight="Bold"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8 0">
+                                        <!-- Bouton Détails -->
+                                        <Button Content="👁 Détails" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource InfoGradient}"
+                                                Foreground="White"
+                                                Click="DetailsButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Désinscrire (seulement si actif) -->
+                                        <Button Content="❌ Désinscrire" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource DangerGradient}"
+                                                Foreground="White"
+                                                Click="UnsubscribeButton_Click"
+                                                Tag="{Binding}"
+                                                Visibility="{Binding EstActif, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Boutons d'action groupés -->
+            <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#15000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="🔄 Actualiser" 
+                            Style="{StaticResource PrimaryButton}"
+                            Background="{StaticResource InfoGradient}"
+                            Click="RefreshButton_Click"
+                            Margin="0 0 10 0"/>
+                    <Button Content="❌ Désinscrire Sélection" 
+                            Style="{StaticResource PrimaryButton}"
+                            Background="{StaticResource DangerGradient}"
+                            Click="BulkUnsubscribeButton_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Barre de statut moderne -->
+            <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                    CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                               FontWeight="Medium" FontSize="13" 
+                               Foreground="White"/>
+                </StackPanel>
+            </Border>
         </Grid>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Inscriptions}"
-                  SelectedItem="{Binding SelectedInscription, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID Ins." Binding="{Binding IDInscription}" Width="Auto"/>
-                <DataGridTextColumn Header="Étudiant" Binding="{Binding Etudiant.NomComplet}" Width="2*"/>
-                <DataGridTextColumn Header="Groupe" Binding="{Binding Groupe.NomDescriptifGroupe}" Width="2*"/>
-                <DataGridTextColumn Header="Matière" Binding="{Binding Groupe.Matiere.NomMatiere}" Width="*"/>
-                <DataGridTextColumn Header="Date Insc." Binding="{Binding DateInscription, StringFormat=dd/MM/yyyy}" Width="Auto"/>
-                <DataGridTextColumn Header="Prix Convenu" Binding="{Binding PrixConvenuMensuel, StringFormat=C2}" Width="Auto"/>
-                <DataGridTextColumn Header="Jour Éch." Binding="{Binding JourEcheanceMensuelle}" Width="Auto"/>
-                <DataGridCheckBoxColumn Header="Active" Binding="{Binding EstActif}" Width="Auto"/>
-                <DataGridTextColumn Header="Date Désinsc." Binding="{Binding DateDesinscription, StringFormat=dd/MM/yyyy, TargetNullValue='-'}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Bouton d'action contextuel (Désinscrire) -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 0 15">
-            <Button Content="Désinscrire Sélection" Command="{Binding DesinscrireCommand}" MinWidth="160"/>
-        </StackPanel>
-
-        <!-- Barre de statut -->
-        <StatusBar Grid.Row="3" Background="#FF3A4F7A" Foreground="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
-            </StatusBarItem>
-        </StatusBar>
     </Grid>
 </UserControl>

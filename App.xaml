@@ -19,7 +19,10 @@
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <converters:IsNullConverter x:Key="IsNullConverter"/>
-        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+        <converters:IsNotNullConverter x:Key="IsNotNullConverter"/> 
+        <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter"/>
+        <converters:IsNullToVisibilityConverter x:Key="IsNullToVisibilityConverter"/>
+        
 
 
         <DataTemplate DataType="{x:Type viewModels:MatiereViewModel}">

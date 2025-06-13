@@ -8,18 +8,31 @@
         mc:Ignorable="d"
         Title="Gestion Centre de Soutien Scolaire" Height="700" Width="950"
         WindowStartupLocation="CenterScreen"
-        FontFamily="Segoe UI">
+        FontFamily="Segoe UI"
+        WindowState="Maximized">
 
     <Window.Resources>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
         <!-- Style pour les boutons du menu -->
         <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Margin" Value="10,8"/>
-            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="8,4"/>
+            <Setter Property="Padding" Value="15,10"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#80FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#60FFFFFF"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -28,21 +41,80 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="5">
+                                CornerRadius="8">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="#20000000" Opacity="0.3"/>
+                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
                                             VerticalAlignment="Center"
                                             Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#40FFFFFF"/>
+                                <Setter TargetName="border" Property="Background" Value="#50FFFFFF"/>
                                 <Setter TargetName="border" Property="BorderBrush" Value="White"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#30FFFFFF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Style pour le bouton de déconnexion -->
+        <Style x:Key="LogoutButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="15,10"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Background" Value="{StaticResource DangerGradient}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="6">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.4"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#fc8181" Offset="0"/>
+                                            <GradientStop Color="#f56565" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#e53e3e" Offset="0"/>
+                                            <GradientStop Color="#c53030" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Convertisseurs -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
 
     <Window.DataContext>
@@ -51,46 +123,121 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Menu de Navigation - Version corrigée -->
-        <Border Grid.Column="0" BorderBrush="#FFD0D0D0" BorderThickness="0,0,1,0">
+        <!-- Menu de Navigation moderne -->
+        <Border Grid.Column="0" BorderThickness="0">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                    <GradientStop Color="#FF3A4F7A" Offset="0"/>
-                    <GradientStop Color="#FF4A6FA5" Offset="1"/>
+                    <GradientStop Color="#667eea" Offset="0"/>
+                    <GradientStop Color="#764ba2" Offset="1"/>
                 </LinearGradientBrush>
             </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+            </Border.Effect>
             
-            <StackPanel Orientation="Vertical" Margin="0,20,0,0">
-                <TextBlock Text="MENU PRINCIPAL" 
-                           FontSize="18" 
-                           FontWeight="SemiBold" 
-                           Margin="0,0,0,25" 
-                           HorizontalAlignment="Center"
-                           Foreground="White"/>
-                
-                <Button Content="Gestion des Salles" Command="{Binding ShowSallesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Gestion des Matières" Command="{Binding ShowMatieresViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Gestion des Professeurs" Command="{Binding ShowProfesseursViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Gestion des Étudiants" Command="{Binding ShowEtudiantsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Gestion des Groupes" Command="{Binding ShowGroupesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Planning" Command="{Binding ShowPlanningViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Inscriptions" Command="{Binding ShowInscriptionsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
-                <Button Content="Gestion Utilisateures" Command="{Binding ShowGestionUtilisateursCommand}" Style="{StaticResource MenuButtonStyle}"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- En-tête utilisateur -->
+                    <RowDefinition Height="*"/>    <!-- Menu -->
+                    <RowDefinition Height="Auto"/> <!-- Bouton déconnexion -->
+                </Grid.RowDefinitions>
 
-                <Border Height="1" Background="#60FFFFFF" Margin="15,20"/>
-            </StackPanel>
+                <!-- En-tête utilisateur -->
+                <Border Grid.Row="0" Background="#40000000" Margin="0,0,0,20" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="👤" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding NomUtilisateurConnecte, FallbackValue='Utilisateur'}" 
+                                   FontSize="16" FontWeight="SemiBold" Foreground="White"
+                                   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding CurrentUserRole, FallbackValue='Rôle'}" 
+                                   FontSize="12" Foreground="#E0FFFFFF"
+                                   HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Menu de navigation -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="15,0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="📋 GESTION QUOTIDIENNE" FontSize="11" FontWeight="SemiBold" 
+                                   Margin="15,0,0,8" Foreground="#C0FFFFFF"/>
+                        
+                        <!-- Accessible à la Secrétaire (et Admin) -->
+                        <Button Content="👨‍🎓 Gestion des Étudiants" Command="{Binding ShowEtudiantsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        <Button Content="📚 Gestion des Matières" Command="{Binding ShowMatieresViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        <Button Content="👥 Gestion des Groupes" Command="{Binding ShowGroupesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        <Button Content="📝 Inscriptions" Command="{Binding ShowInscriptionsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        <Button Content="📅 Planification Séances" Command="{Binding ShowPlanningViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        
+                        <!-- Séparateur pour l'Admin -->
+                        <Border Height="1" Background="#60FFFFFF" Margin="15,20,15,10"
+                                Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        
+                        <TextBlock Text="⚙️ ADMINISTRATION" FontSize="11" FontWeight="SemiBold" 
+                                   Margin="15,10,0,8" Foreground="#C0FFFFFF"
+                                   Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        
+                        <Button Content="🏫 Gestion des Salles" Command="{Binding ShowSallesViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
+                        <Button Content="👨‍🏫 Gestion des Professeurs" Command="{Binding ShowProfesseursViewCommand}" Style="{StaticResource MenuButtonStyle}"
+                                Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <Button Content="👥 Gestion Utilisateurs" Command="{Binding ShowGestionUtilisateursCommand}" Style="{StaticResource MenuButtonStyle}"
+                                Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Bouton de déconnexion -->
+                <Button Grid.Row="2" Content="🚪 Se déconnecter" 
+                        Style="{StaticResource LogoutButtonStyle}"
+                        Click="LogoutButton_Click"
+                        ToolTip="Fermer la session et retourner à l'écran de connexion"/>
+            </Grid>
         </Border>
 
         <!-- Contenu Principal -->
-        <Border Grid.Column="1" Padding="20" Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
-            </Border.Effect>
-            <ContentControl Content="{Binding CurrentViewViewModel}"/>
+        <Border Grid.Column="1" Background="#f8fafc" Padding="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Barre de titre -->
+                <Border Grid.Row="0" Background="White" Padding="25,15" Margin="0,0,0,1">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="6" ShadowDepth="1" Color="#20000000" Opacity="0.1"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <TextBlock Text="🎓" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Centre de Soutien Scolaire" 
+                                           FontSize="20" FontWeight="Bold" Foreground="#2d3748"/>
+                                <TextBlock Text="{Binding CurrentViewTitle, FallbackValue='Tableau de bord'}" 
+                                           FontSize="14" Foreground="#718096"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🕐" FontSize="16" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding CurrentDateTime, StringFormat='dd/MM/yyyy HH:mm'}" 
+                                       FontSize="12" Foreground="#4a5568" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Zone de contenu -->
+                <Border Grid.Row="1" Background="Transparent" Padding="20">
+                    <ContentControl Content="{Binding CurrentViewViewModel}"/>
+                </Border>
+            </Grid>
         </Border>
     </Grid>
 </Window>

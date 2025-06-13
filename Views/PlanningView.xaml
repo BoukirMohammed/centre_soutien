@@ -3,258 +3,549 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:centre_soutien.Views" 
+             xmlns:converters="clr-namespace:centre_soutien.Converters"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
-             xmlns:system="clr-namespace:System;assembly=mscorlib" 
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="950"
-             FontFamily="Segoe UI">
+             FontFamily="Segoe UI"
+             KeyDown="UserControl_KeyDown"
+             Focusable="True">
 
     <UserControl.Resources>
-        <!-- Styles communs (inspirés de GestionMatieresView) -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="10 5"/>
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="WarningGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#ed8936" Offset="0"/>
+            <GradientStop Color="#dd6b20" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="6 3"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Style moderne pour les ComboBox -->
         <Style TargetType="ComboBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
         </Style>
-        
+
+        <!-- Style moderne pour les DatePicker -->
         <Style TargetType="DatePicker">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="4"/> <!-- Ajustement du padding pour DatePicker -->
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
         </Style>
 
+        <!-- Style moderne pour les Labels -->
         <Style TargetType="Label">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- Style pour le DataGrid -->
+        <!-- Style moderne pour le DataGrid -->
         <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="0 0 0 15"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="RowHeight" Value="40"/>
         </Style>
 
+        <!-- Style moderne pour les en-têtes DataGrid -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="35"/>
         </Style>
 
-        <!-- Style pour les boutons plus petits dans le DataGrid -->
-        <Style x:Key="DataGridButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Padding" Value="5 2"/>
-            <Setter Property="FontSize" Value="10"/>
-            <Setter Property="MinWidth" Value="50"/> <!-- Réduit pour s'adapter -->
-            <Setter Property="Margin" Value="2"/>
-        </Style>
-        
-        <!-- Décommentez et assurez-vous que ces converters sont disponibles dans votre projet -->
-        <!-- (soit globalement dans App.xaml, soit définis ici, soit dans un fichier de ressources partagé) -->
+        <!-- Convertisseurs -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <!-- Pour InverseBooleanToVisibilityConverter, vous devez avoir une classe qui implémente IValueConverter -->
-        <!-- Exemple si vous avez une classe 'InverseBooleanToVisibilityConverter' dans le namespace 'local' : -->
-        <!-- <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/> -->
-        <!-- Si vous n'en avez pas, vous pouvez en créer une simple : -->
-        <!--
-        public class InverseBooleanToVisibilityConverter : IValueConverter
-        {
-            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                bool bValue = (bool)value;
-                return bValue ? Visibility.Collapsed : Visibility.Visible;
-            }
-            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
-        }
-        -->
-
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <converters:StringDateConverter x:Key="StringDateConverter"/>
+        <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <converters:StatusToTextConverter x:Key="StatusToTextConverter"/>
+        <converters:ActiveToggleTextConverter x:Key="ActiveToggleTextConverter"/>
+        <converters:ActiveToggleTooltipConverter x:Key="ActiveToggleTooltipConverter"/>
+        <converters:ActiveToggleColorConverter x:Key="ActiveToggleColorConverter"/>
+        <converters:TimeStringConverter x:Key="TimeStringConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:PlanningViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Titre -->
-            <RowDefinition Height="Auto"/> <!-- Formulaire d'ajout/modification -->
-            <RowDefinition Height="Auto"/> <!-- Titre Liste -->
-            <RowDefinition Height="*"/>    <!-- DataGrid des créneaux -->
-            <RowDefinition Height="Auto"/> <!-- StatusBar -->
-        </Grid.RowDefinitions>
-
-        <!-- Titre -->
-        <TextBlock Grid.Row="0" Text="Planification des Créneaux Hebdomadaires" 
-                   FontSize="24" FontWeight="SemiBold" Margin="0 0 0 15"
-                   Foreground="#FF3A4F7A">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Color="#20000000"/>
-            </TextBlock.Effect>
-        </TextBlock>
-
-        <!-- Formulaire d'Ajout/Modification de Créneau -->
-        <Border Grid.Row="1" BorderThickness="0" CornerRadius="5" Margin="0 0 0 15"
-                Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
-            </Border.Effect>
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/> <!-- Labels -->
-                    <ColumnDefinition Width="*"/>    <!-- Controls Col 1 -->
-                    <ColumnDefinition Width="Auto"/> <!-- Labels Col 2 -->
-                    <ColumnDefinition Width="*"/>    <!-- Controls Col 2 -->
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/> <!-- Groupe -->
-                    <RowDefinition Height="Auto"/> <!-- Salle -->
-                    <RowDefinition Height="Auto"/> <!-- Jour Semaine & Heure Début -->
-                    <RowDefinition Height="Auto"/> <!-- Date Début Validité & Heure Fin -->
-                    <RowDefinition Height="Auto"/> <!-- Date Fin Validité -->
-                    <RowDefinition Height="Auto"/> <!-- Notes -->
-                    <RowDefinition Height="Auto"/> <!-- Boutons -->
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" Content="Groupe:"/>
-                <ComboBox Grid.Row="0" Grid.Column="1" 
-                          ItemsSource="{Binding AllGroupesActifs}"
-                          SelectedItem="{Binding SelectedGroupeForNewCreneau, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock TextTrimming="CharacterEllipsis" ToolTip="{Binding}"> <!-- Tooltip pour voir le texte complet si tronqué -->
-                                <Run Text="{Binding NomDescriptifGroupe, Mode=OneWay}" FontWeight="Bold"/>
-                                <Run Text=" ("/><Run Text="{Binding Matiere.NomMatiere, Mode=OneWay}"/><Run Text=" - Prof: "/><Run Text="{Binding Professeur.NomComplet, Mode=OneWay}"/><Run Text=")"/>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-
-                <Label Grid.Row="1" Grid.Column="0" Content="Salle:"/>
-                <ComboBox Grid.Row="1" Grid.Column="1" 
-                          ItemsSource="{Binding AllSallesActives}"
-                          SelectedItem="{Binding SelectedSalleForNewCreneau, Mode=TwoWay}"
-                          DisplayMemberPath="NomOuNumeroSalle"/>
-
-                <Label Grid.Row="2" Grid.Column="0" Content="Jour Semaine:"/> <!-- Raccourci pour "Jour de la Semaine" -->
-                <ComboBox Grid.Row="2" Grid.Column="1" 
-                          ItemsSource="{Binding JoursDeLaSemaine}"
-                          SelectedItem="{Binding SelectedJourSemaineForNewCreneau, Mode=TwoWay}"/>
-
-                <Label Grid.Row="2" Grid.Column="2" Content="Heure Début:" Margin="15 5 5 5"/> <!-- Marge pour espacement colonne -->
-                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding HeureDebutInput, UpdateSourceTrigger=PropertyChanged}" ToolTip="Format HH:MM"/>
-                
-                <Label Grid.Row="3" Grid.Column="0" Content="Début Validité:"/>
-                <DatePicker Grid.Row="3" Grid.Column="1" 
-                            SelectedDate="{Binding DateDebutValiditeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <Label Grid.Row="3" Grid.Column="2" Content="Heure Fin:" Margin="15 5 5 5"/> <!-- Marge pour espacement colonne -->
-                <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding HeureFinInput, UpdateSourceTrigger=PropertyChanged}" ToolTip="Format HH:MM"/>
-
-                <Label Grid.Row="4" Grid.Column="0" Content="Fin Validité (Opt.):"/>
-                <DatePicker Grid.Row="4" Grid.Column="1" 
-                            SelectedDate="{Binding DateFinValiditeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                
-                <Label Grid.Row="5" Grid.Column="0" Content="Notes (Opt.):" VerticalAlignment="Top" Margin="5 8 5 5"/> <!-- Marge top pour aligner avec TextBox multiligne -->
-                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding NotesNewCreneauInput, UpdateSourceTrigger=PropertyChanged}" 
-                         TextWrapping="Wrap" AcceptsReturn="True" MinLines="2" MaxHeight="50" VerticalAlignment="Top"/>
-
-                <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
-                    <Button Content="Ajouter Créneau" Command="{Binding AddCreneauCommand}" Margin="0 0 5 0"/>
-                    <Button Content="Modifier Créneau" Command="{Binding UpdateCreneauCommand}" Margin="0 0 5 0"/>
-                    <Button Content="Vider Formulaire" Command="{Binding ClearFormCommand}" Margin="0 0 0 0"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         
-        <TextBlock Grid.Row="2" Text="Créneaux Hebdomadaires Planifiés" 
-                   FontSize="18" FontWeight="SemiBold" Margin="0 0 0 10" 
-                   Foreground="#FF3A4F7A"/>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <DataGrid Grid.Row="3" ItemsSource="{Binding CreneauxPlanifies}"
-                  SelectedItem="{Binding SelectedCreneauForEditDelete, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDSeance, Mode=OneWay}" Width="Auto"/>
-                <DataGridTextColumn Header="Jour" Binding="{Binding JourSemaine, Mode=OneWay}" Width="Auto"/>
-                <DataGridTextColumn Header="Début" Binding="{Binding HeureDebut, Mode=OneWay, StringFormat=HH:mm}" Width="Auto"/>
-                <DataGridTextColumn Header="Fin" Binding="{Binding HeureFin, Mode=OneWay, StringFormat=HH:mm}" Width="Auto"/>
-                <DataGridTextColumn Header="Groupe" Binding="{Binding Groupe.NomDescriptifGroupe, Mode=OneWay}" Width="1.5*"/>
-                <DataGridTextColumn Header="Matière" Binding="{Binding Groupe.Matiere.NomMatiere, Mode=OneWay}" Width="*"/>
-                <DataGridTextColumn Header="Professeur" Binding="{Binding Groupe.Professeur.NomComplet, Mode=OneWay}" Width="*"/>
-                <DataGridTextColumn Header="Salle" Binding="{Binding Salle.NomOuNumeroSalle, Mode=OneWay}" Width="0.8*"/>
-                <DataGridTextColumn Header="Valide du" Binding="{Binding DateDebutValidite, Mode=OneWay, StringFormat=dd/MM/yyyy}" Width="Auto"/>
-                <DataGridTextColumn Header="Valide au" Binding="{Binding DateFinValidite, Mode=OneWay, TargetNullValue='Indéfini', StringFormat=dd/MM/yyyy}" Width="Auto"/>
-                <DataGridCheckBoxColumn Header="Actif" Binding="{Binding EstActif, Mode=OneWay}" Width="Auto"/>
-                
-                <DataGridTemplateColumn Header="Actions" Width="Auto" MinWidth="160"> <!-- Ajusté MinWidth -->
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Désact." ToolTip="Désactiver ce créneau" Style="{StaticResource DataGridButton}"
-                                        Command="{Binding DataContext.DeactivateCreneauCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        CommandParameter="{Binding}"
-                                        Visibility="{Binding EstActif, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                <Button Content="Réact." ToolTip="Réactiver ce créneau" Style="{StaticResource DataGridButton}"
-                                        Command="{Binding DataContext.ActivateCreneauCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        CommandParameter="{Binding}"
-                                        Visibility="{Binding EstActif, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                                <Button Content="Suppr." ToolTip="Supprimer ce créneau" Style="{StaticResource DataGridButton}"
-                                        Command="{Binding DataContext.DeleteCreneauCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        CommandParameter="{Binding}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="📅" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Planification des Créneaux" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Organisez les créneaux hebdomadaires de cours" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
 
-        <StatusBar Grid.Row="4" Background="#FF3A4F7A" Foreground="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
-            </StatusBarItem>
-        </StatusBar>
+            <!-- Bouton pour afficher/masquer le formulaire -->
+            <Button Grid.Row="1" Content="➕ Nouveau Créneau" 
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalAlignment="Left"
+                    Margin="0 20 0 0"
+                    FontSize="15"
+                    Click="AddSlotButton_Click"
+                    x:Name="AddSlotButton"/>
+
+            <!-- Formulaire d'ajout/modification (caché par défaut) -->
+            <Border Grid.Row="2" Background="White" 
+                    CornerRadius="12" Margin="0 15 0 0" Padding="20"
+                    Visibility="Collapsed"
+                    x:Name="FormPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Titre du formulaire avec aide -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                        <Border Background="{StaticResource PrimaryGradient}" 
+                                Width="30" Height="30" 
+                                CornerRadius="15" 
+                                Margin="0 0 12 0">
+                            <TextBlock Text="🕒" FontSize="16" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Planification de Créneau" 
+                                       FontSize="16" FontWeight="Bold" 
+                                       Foreground="#2d3748"/>
+                            <TextBlock Text="Définissez les détails du créneau hebdomadaire (ex: heures 09:00, 14:30)" 
+                                       FontSize="10" 
+                                       Foreground="#718096"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Champs du formulaire en grille 2x4 -->
+                    <Grid Grid.Row="1" Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Première ligne : Groupe, Salle, Jour -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Groupe:" Margin="2" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding AllGroupesActifs}"
+                                      SelectedItem="{Binding SelectedGroupeForNewCreneau, Mode=TwoWay}"
+                                      Margin="2">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextTrimming="CharacterEllipsis" ToolTip="{Binding}">
+                                            <Run Text="{Binding NomDescriptifGroupe, Mode=OneWay}" FontWeight="SemiBold"/>
+                                            <Run Text=" • " Foreground="#a0aec0"/>
+                                            <Run Text="{Binding Matiere.NomMatiere, Mode=OneWay}" Foreground="#38a169"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0">
+                            <Label Content="Salle:" Margin="2" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding AllSallesActives}"
+                                      SelectedItem="{Binding SelectedSalleForNewCreneau, Mode=TwoWay}"
+                                      DisplayMemberPath="NomOuNumeroSalle" 
+                                      Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="6 0 0 0">
+                            <Label Content="Jour de la semaine:" Margin="2" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding JoursDeLaSemaine}"
+                                      SelectedItem="{Binding SelectedJourSemaineForNewCreneau, Mode=TwoWay}" 
+                                      Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Deuxième ligne : Heure début, Heure fin, Date début -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Heure début:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding HeureDebutInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Format HH:MM (ex: 09:00, 14:30)" Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="6 0">
+                            <Label Content="Heure fin:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding HeureFinInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Format HH:MM (ex: 10:00, 15:30)" Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="6 0 0 0">
+                            <Label Content="Début validité:" Margin="2" FontSize="11"/>
+                            <DatePicker SelectedDate="{Binding DateDebutValiditeInput, Mode=TwoWay}" 
+                                        Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Troisième ligne : Date fin, Notes -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Fin validité (opt.):" Margin="2" FontSize="11"/>
+                            <DatePicker SelectedDate="{Binding DateFinValiditeInput, Mode=TwoWay}" 
+                                        Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="6 0 0 0">
+                            <Label Content="Notes (opt.):" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding NotesNewCreneauInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" AcceptsReturn="True" MinHeight="40" 
+                                     Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Boutons du formulaire - À DROITE -->
+                        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="3" 
+                                    Orientation="Vertical" 
+                                    VerticalAlignment="Center"
+                                    Margin="15 0 0 0">
+                            <Button Content="💾 Enregistrer" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Click="SaveSlotButton_Click"
+                                    Margin="0 0 0 8"
+                                    Width="110"/>
+                            <Button Content="❌ Annuler" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Background="{StaticResource DangerGradient}"
+                                    Click="CancelSlotButton_Click"
+                                    Width="110"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Tableau des créneaux -->
+            <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="2" Margin="0 15 0 0"
+                    x:Name="DataGridPanel">                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <DataGrid ItemsSource="{Binding CreneauxPlanifies}"
+                          SelectedItem="{Binding SelectedCreneauForEditDelete, Mode=TwoWay}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Jour -->
+                        <DataGridTextColumn Header="Jour" Binding="{Binding JourSemaine}" Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="10 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Horaires -->
+                        <DataGridTemplateColumn Header="Horaires" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding HeureDebut, Converter={StaticResource TimeStringConverter}}" 
+                                                   FontWeight="SemiBold" Foreground="#2d3748" FontSize="11"/>
+                                        <TextBlock Text="→" FontSize="8" Foreground="#a0aec0"/>
+                                        <TextBlock Text="{Binding HeureFin, Converter={StaticResource TimeStringConverter}}" 
+                                                   FontWeight="SemiBold" Foreground="#2d3748" FontSize="11"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Groupe -->
+                        <DataGridTextColumn Header="Groupe" Binding="{Binding Groupe.NomDescriptifGroupe}" Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#4299e1"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Matière -->
+                        <DataGridTextColumn Header="Matière" Binding="{Binding Groupe.Matiere.NomMatiere}" Width="120">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#38a169"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Salle -->
+                        <DataGridTextColumn Header="Salle" Binding="{Binding Salle.NomOuNumeroSalle}" Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#ed8936"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Période de validité -->
+                        <DataGridTemplateColumn Header="Validité" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding DateDebutValidite, Converter={StaticResource StringDateConverter}}" 
+                                                   FontSize="10" Foreground="#4a5568"/>
+                                        <TextBlock Text="→" FontSize="8" Foreground="#a0aec0"/>
+                                        <TextBlock Text="{Binding DateFinValidite, Converter={StaticResource StringDateConverter}, TargetNullValue='∞'}" 
+                                                   FontSize="10" Foreground="#4a5568"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Statut -->
+                        <DataGridTemplateColumn Header="Statut" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding EstActif, Converter={StaticResource StatusToColorConverter}}" 
+                                            CornerRadius="8" Padding="6 3" Margin="3">
+                                        <TextBlock Text="{Binding EstActif, Converter={StaticResource StatusToTextConverter}}" 
+                                                   Foreground="White" FontSize="9" FontWeight="Bold"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="160">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0">
+                                        <!-- Bouton Modifier -->
+                                        <Button Content="✏" ToolTip="Modifier" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource InfoGradient}"
+                                                Foreground="White"
+                                                Click="EditSlotButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Activer/Désactiver -->
+                                        <Button Content="{Binding EstActif, Converter={StaticResource ActiveToggleTextConverter}}" 
+                                                ToolTip="{Binding EstActif, Converter={StaticResource ActiveToggleTooltipConverter}}"
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{Binding EstActif, Converter={StaticResource ActiveToggleColorConverter}}"
+                                                Foreground="White"
+                                                Click="ToggleSlotButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Supprimer -->
+                                        <Button Content="🗑" ToolTip="Supprimer" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource DangerGradient}"
+                                                Foreground="White"
+                                                Click="DeleteSlotButton_Click"
+                                                Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Barre de statut moderne -->
+            <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                    CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                               FontWeight="Medium" FontSize="13" 
+                               Foreground="White"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

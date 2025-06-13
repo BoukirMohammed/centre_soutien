@@ -3,167 +3,452 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:centre_soutien.Views"
+             xmlns:converters="clr-namespace:centre_soutien.Views"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+             xmlns:converters1="clr-namespace:centre_soutien.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="720" d:DesignWidth="1200"
-             FontFamily="Segoe UI">
+             d:DesignHeight="750" d:DesignWidth="950"
+             FontFamily="Segoe UI"
+             KeyDown="UserControl_KeyDown"
+             Focusable="True">
 
     <UserControl.Resources>
-        <!-- Styles communs -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="12 6"/>
-            <Setter Property="Margin" Value="4"/>
-            <Setter Property="MinWidth" Value="120"/>
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="WarningGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#ed8936" Offset="0"/>
+            <GradientStop Color="#dd6b20" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#e2e8f0"/>
+                                <Setter Property="Foreground" Value="#a0aec0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="6 3"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#e2e8f0"/>
+                                <Setter Property="Foreground" Value="#a0aec0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les TextBox -->
         <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="8"/>
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Style moderne pour les Labels -->
         <Style TargetType="Label">
-            <Setter Property="Margin" Value="0 8"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- Style pour le DataGrid -->
+        <!-- Style moderne pour le DataGrid -->
         <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="0 0 0 15"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="RowHeight" Value="40"/>
         </Style>
 
+        <!-- Style moderne pour les en-têtes DataGrid -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="35"/>
         </Style>
+
+        <!-- Convertisseurs -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters1:ProfesseurStatusToColorConverter x:Key="ProfesseurStatusToColorConverter"/>
+        <converters1:ProfesseurStatusToTextConverter x:Key="ProfesseurStatusToTextConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:ProfesseurViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Titre -->
-        <TextBlock Grid.Row="0" Text="Gestion des Professeurs" 
-                   FontSize="24" FontWeight="SemiBold" Margin="0 0 0 15"
-                   Foreground="#FF3A4F7A">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Color="#20000000"/>
-            </TextBlock.Effect>
-        </TextBlock>
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="👨‍🏫" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Gestion des Professeurs" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Gérez les informations et matières enseignées par les professeurs" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
 
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="1" 
-                 ItemsSource="{Binding Professeurs}"
-                 SelectedItem="{Binding SelectedProfesseur, Mode=TwoWay}"
-                 AutoGenerateColumns="False" 
-                 IsReadOnly="True"
-                 CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDProfesseur}" Width="Auto"/>
-                <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*"/>
-                <DataGridTextColumn Header="Prénom" Binding="{Binding Prenom}" Width="*"/>
-                <DataGridTextColumn Header="Téléphone" Binding="{Binding Telephone}" Width="*"/>
-                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="2*"/>
-                <DataGridCheckBoxColumn Header="Archivé" Binding="{Binding EstArchive}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Formulaire -->
-        <Border Grid.Row="2" BorderThickness="0" CornerRadius="5" Margin="0 0 0 15"
-                Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
-            </Border.Effect>
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <!-- Boutons d'action principaux -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 20 0 0">
+                <Button Content="➕ Nouveau Professeur" 
+                        Style="{StaticResource PrimaryButton}"
+                        FontSize="15"
+                        Click="AddProfesseurButton_Click"
+                        x:Name="AddProfesseurButton"/>
                 
-                <Grid Grid.Column="0" Margin="0 0 16 0">
+                <Button Content="🔄 Actualiser" 
+                        Style="{StaticResource PrimaryButton}"
+                        Background="{StaticResource InfoGradient}"
+                        FontSize="15"
+                        Command="{Binding LoadProfesseursCommand}"
+                        Margin="10 5 5 5"/>
+            </StackPanel>
+
+            <!-- Formulaire d'ajout/modification (caché par défaut) -->
+            <Border Grid.Row="2" Background="White" 
+                    CornerRadius="12" Margin="0 15 0 0" Padding="20"
+                    Visibility="Collapsed"
+                    x:Name="FormPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Nom:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NomInput, UpdateSourceTrigger=PropertyChanged}"/>
+                    <!-- Titre du formulaire -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                        <Border Background="{StaticResource PrimaryGradient}" 
+                                Width="30" Height="30" 
+                                CornerRadius="15" 
+                                Margin="0 0 12 0">
+                            <TextBlock Text="📝" FontSize="16" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Informations du Professeur" 
+                                       FontSize="16" FontWeight="Bold" 
+                                       Foreground="#2d3748"/>
+                            <TextBlock Text="Remplissez les informations personnelles du professeur" 
+                                       FontSize="10" 
+                                       Foreground="#718096"/>
+                        </StackPanel>
+                    </StackPanel>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Prénom:"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PrenomInput, UpdateSourceTrigger=PropertyChanged}"/>
+                    <!-- Champs du formulaire -->
+                    <Grid Grid.Row="1" Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Téléphone:"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TelephoneInput, UpdateSourceTrigger=PropertyChanged}"/>
+                        <!-- Première ligne : Nom et Prénom -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Nom *:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding NomInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Nom de famille du professeur" 
+                                     Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
+                            <Label Content="Prénom *:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding PrenomInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Prénom du professeur" 
+                                     Margin="2"/>
+                        </StackPanel>
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Notes:"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
-                             TextWrapping="Wrap" AcceptsReturn="True" MinLines="3"/>
+                        <!-- Deuxième ligne : Téléphone -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Téléphone :" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding TelephoneInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Numéro de téléphone du professeur" 
+                                     Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Troisième ligne : Notes -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 0">
+                            <Label Content="Notes (optionnelles) :" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" 
+                                     ToolTip="Notes diverses concernant le professeur"
+                                     Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Boutons du formulaire - À DROITE -->
+                        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" 
+                                    Orientation="Vertical" 
+                                    VerticalAlignment="Center"
+                                    Margin="15 0 0 0">
+                            <Button Content="💾 Enregistrer" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Click="SaveProfesseurButton_Click"
+                                    Margin="0 0 0 8"
+                                    Width="110"/>
+                            <Button Content="❌ Annuler" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Background="{StaticResource DangerGradient}"
+                                    Click="CancelProfesseurButton_Click"
+                                    Width="110"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
+            </Border>
 
-                <StackPanel Grid.Column="1" Orientation="Vertical" MinWidth="200">
-                    <Button Content="Ajouter" Command="{Binding AddProfesseurCommand}"/>
-                    <Button Content="Modifier" Command="{Binding UpdateProfesseurCommand}"/>
-                    <Button Content="Archiver" Command="{Binding ArchiveProfesseurCommand}"/>
-                    
-                    <Separator Margin="0 12" Background="#FFE0E0E0"/>
-                    
-                    <Button Content="Gérer Matières/Rémun." Command="{Binding OpenGestionMatieresProfesseurCommand}"/>
-                    
-                    <Separator Margin="0 12" Background="#FFE0E0E0"/>
-                    
-                    <Button Content="Nouveau/Vider" Command="{Binding ClearFormCommand}" 
-                            BorderBrush="#FF3A4F7A" BorderThickness="1" 
-                            Foreground="#FF3A4F7A" Background="Transparent"/>
+            <!-- Tableau des professeurs -->
+            <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="2" Margin="0 15 0 0"
+                    x:Name="DataGridPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <DataGrid ItemsSource="{Binding Professeurs}"
+                          SelectedItem="{Binding SelectedProfesseur, Mode=TwoWay}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Nom complet -->
+                        <DataGridTemplateColumn Header="Professeur" Width="180">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" Margin="5">
+                                        <TextBlock FontWeight="SemiBold" FontSize="13" Foreground="#2d3748">
+                                            <Run Text="{Binding Prenom}"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding Nom}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Telephone, TargetNullValue='Pas de téléphone'}" 
+                                                   FontSize="10" Foreground="#718096"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Notes -->
+                        <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="300">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#4a5568"/>
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                    <Setter Property="ToolTip" Value="{Binding Notes}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Statut -->
+                        <DataGridTemplateColumn Header="Statut" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding EstArchive, Converter={StaticResource ProfesseurStatusToColorConverter}}" 
+                                            CornerRadius="8" Padding="6 3" Margin="3">
+                                        <TextBlock Text="{Binding EstArchive, Converter={StaticResource ProfesseurStatusToTextConverter}}" 
+                                                   Foreground="White" FontSize="9" FontWeight="Bold"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="220">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0">
+                                        <!-- Bouton Modifier -->
+                                        <Button Content="✏" ToolTip="Modifier" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource InfoGradient}"
+                                                Foreground="White"
+                                                Click="EditProfesseurButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Gérer Matières -->
+                                        <Button Content="📚" ToolTip="Gérer Matières" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource SuccessGradient}"
+                                                Foreground="White"
+                                                Click="GererMatieresButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Archiver -->
+                                        <Button Content="🗃️" ToolTip="Archiver" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource WarningGradient}"
+                                                Foreground="White"
+                                                Click="ArchiveProfesseurButton_Click"
+                                                Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Barre de statut moderne -->
+            <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                    CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                    <TextBlock Text="{Binding StatusMessage, FallbackValue='Prêt - Gérez vos professeurs facilement'}" 
+                               FontWeight="Medium" FontSize="13" 
+                               Foreground="White"/>
                 </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Barre de statut -->
-        <StatusBar Grid.Row="3" Background="#FF3A4F7A" Foreground="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
-            </StatusBarItem>
-        </StatusBar>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

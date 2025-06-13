@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using centre_soutien.Services; // Pour CurrentUserSession
+
 
 namespace centre_soutien.ViewModels
 {
@@ -22,6 +24,8 @@ namespace centre_soutien.ViewModels
         }
 
         private Etudiant? _selectedEtudiant; // Nullable
+        public bool CanUserArchive => CurrentUserSession.IsAdmin;
+        
         public Etudiant? SelectedEtudiant
         {
             get => _selectedEtudiant;
@@ -121,8 +125,10 @@ namespace centre_soutien.ViewModels
             LoadEtudiantsCommand = new RelayCommand(async param => await LoadEtudiantsAsync());
             AddEtudiantCommand = new RelayCommand(async param => await AddEtudiantAsync(), CanAddOrUpdateEtudiant);
             UpdateEtudiantCommand = new RelayCommand(async param => await UpdateEtudiantAsync(), CanUpdateOrArchiveEtudiant);
-            ArchiveEtudiantCommand = new RelayCommand(async param => await ArchiveEtudiantAsync(), CanArchiveEtudiant);
-            ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
+            ArchiveEtudiantCommand = new RelayCommand(
+                async param => await ArchiveEtudiantAsync(),
+                param => SelectedEtudiant != null && CanUserArchive // Le bouton ne s'active que si un étudiant est sélectionné ET l'utilisateur a le droit
+            );            ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
 
             _ = LoadEtudiantsAsync();
         }

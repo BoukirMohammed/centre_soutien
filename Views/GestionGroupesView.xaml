@@ -6,187 +6,572 @@
              xmlns:local="clr-namespace:centre_soutien.Views"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="900"
-             FontFamily="Segoe UI">
+             d:DesignHeight="700" d:DesignWidth="950"
+             FontFamily="Segoe UI"
+             KeyDown="UserControl_KeyDown"
+             Focusable="True">
 
     <UserControl.Resources>
-        <!-- Styles communs (inspirés de GestionMatieresView) -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="10 5"/>
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="70"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Style moderne pour les ComboBox -->
         <Style TargetType="ComboBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
         </Style>
 
+        <!-- Style moderne pour les Labels -->
         <Style TargetType="Label">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- Style pour le DataGrid -->
+        <!-- Style moderne pour le DataGrid -->
         <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="0 0 0 15"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="RowHeight" Value="45"/>
         </Style>
 
+        <!-- Style moderne pour les en-têtes DataGrid -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Padding" Value="12 10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
+
+        <!-- Style pour ListBox professeurs -->
+        <Style x:Key="ProfesseurListBoxStyle" TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="ProfesseurListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="12 10"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6" 
+                                Padding="{TemplateBinding Padding}"
+                                x:Name="border">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#f0f4ff"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Convertisseurs -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:GroupeViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Titre -->
-            <RowDefinition Height="*"/>    <!-- DataGrid -->
-            <RowDefinition Height="Auto"/> <!-- Formulaire -->
-            <RowDefinition Height="Auto"/> <!-- StatusBar -->
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.03">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
 
-        <!-- Titre -->
-        <TextBlock Grid.Row="0" Text="Gestion des Groupes" 
-                   FontSize="24" FontWeight="SemiBold" Margin="0 0 0 15"
-                   Foreground="#FF3A4F7A">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Color="#20000000"/>
-            </TextBlock.Effect>
-        </TextBlock>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Groupes}"
-                  SelectedItem="{Binding SelectedGroupe, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDGroupe}" Width="Auto"/>
-                <DataGridTextColumn Header="Nom du Groupe" Binding="{Binding NomDescriptifGroupe}" Width="2*"/>
-                <DataGridTextColumn Header="Matière" Binding="{Binding Matiere.NomMatiere}" Width="*"/>
-                <DataGridTextColumn Header="Professeur" Binding="{Binding Professeur.NomComplet}" Width="*"/> 
-                <!-- Assurez-vous que Professeur a une propriété NomComplet, sinon utilisez Professeur.Nom ou un DataTemplate -->
-                <DataGridTextColumn Header="Niveau" Binding="{Binding Niveau}" Width="Auto"/>
-                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="2*"/>
-                <DataGridCheckBoxColumn Header="Archivé" Binding="{Binding EstArchive}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Formulaire -->
-        <Border Grid.Row="2" BorderThickness="0" CornerRadius="5" Margin="0 0 0 15"
-                Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
-            </Border.Effect>
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/> <!-- Labels -->
-                    <ColumnDefinition Width="*"/>    <!-- Controls -->
-                    <ColumnDefinition Width="Auto"/>  <!-- Boutons -->
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/> <!-- Nom Groupe -->
-                    <RowDefinition Height="Auto"/> <!-- Matière -->
-                    <RowDefinition Height="Auto"/> <!-- Professeur -->
-                    <RowDefinition Height="Auto"/> <!-- Niveau -->
-                    <RowDefinition Height="Auto"/> <!-- Notes -->
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" Content="Nom du Groupe:"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NomDescriptifInput, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <Label Grid.Row="1" Grid.Column="0" Content="Matière:"/>
-                <ComboBox Grid.Row="1" Grid.Column="1"
-                          ItemsSource="{Binding AllMatieres}"
-                          SelectedItem="{Binding SelectedMatiereForForm, Mode=TwoWay}"
-                          DisplayMemberPath="NomMatiere"  
-                          SelectedValuePath="IDMatiere"/>
-
-                <Label Grid.Row="2" Grid.Column="0" Content="Professeur:"/>
-                <ComboBox Grid.Row="2" Grid.Column="1"
-                          ItemsSource="{Binding AllProfesseurs}"
-                          SelectedItem="{Binding SelectedProfesseurForForm, Mode=TwoWay}"
-                          DisplayMemberPath="NomComplet"/> 
-                <!-- Assurez-vous que Professeur a une propriété NomComplet. 
-                     Alternativement, utilisez un ItemTemplate pour afficher Nom et Prénom si NomComplet n'existe pas.
-                     Exemple avec ItemTemplate (si NomComplet n'existe pas):
-                     <ComboBox.ItemTemplate>
-                         <DataTemplate>
-                             <TextBlock>
-                                 <TextBlock.Text>
-                                     <MultiBinding StringFormat="{}{0} {1}">
-                                         <Binding Path="Nom"/>
-                                         <Binding Path="Prenom"/>
-                                     </MultiBinding>
-                                 </TextBlock.Text>
-                             </TextBlock>
-                         </DataTemplate>
-                     </ComboBox.ItemTemplate>
-                -->
-                               
-                <Label Grid.Row="3" Grid.Column="0" Content="Niveau:"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NiveauInput, UpdateSourceTrigger=PropertyChanged}"/>
-                
-                <Label Grid.Row="4" Grid.Column="0" Content="Notes:"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
-                         TextWrapping="Wrap" AcceptsReturn="True" MinLines="2" MaxHeight="60"/>
-
-                <!-- Boutons d'action -->
-                <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" Orientation="Vertical" 
-                            Margin="15 0 0 0" VerticalAlignment="Top">
-                    <Button Content="Ajouter" Command="{Binding AddGroupeCommand}"/>
-                    <Button Content="Modifier" Command="{Binding UpdateGroupeCommand}"/>
-                    <Button Content="Archiver" Command="{Binding ArchiveGroupeCommand}"/>
-                    <Button Content="Nouveau" Command="{Binding ClearFormCommand}" Margin="0 15 0 0"/> <!-- Margin top pour espacer comme dans l'exemple -->
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="👥" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Gestion des Groupes" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Organisez les groupes par professeur et matière" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
                 </StackPanel>
-            </Grid>
-        </Border>
+            </Border>
 
-        <!-- Barre de statut -->
-        <StatusBar Grid.Row="3" Background="#FF3A4F7A" Foreground="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
-            </StatusBarItem>
-        </StatusBar>
+            <!-- Contenu principal avec layout à 2 colonnes -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Panel gauche - Liste des professeurs -->
+                <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Titre section professeurs -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                            <Border Background="{StaticResource InfoGradient}" 
+                                    Width="25" Height="25" 
+                                    CornerRadius="12" 
+                                    Margin="0 0 10 0">
+                                <TextBlock Text="👨‍🏫" FontSize="12" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Professeurs" 
+                                       FontSize="16" FontWeight="Bold" 
+                                       Foreground="#2d3748" 
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <!-- Liste des professeurs -->
+                        <ListBox Grid.Row="1" 
+                                 ItemsSource="{Binding AllProfesseursActifs}"
+                                 SelectedItem="{Binding SelectedProfesseurForFilter, Mode=TwoWay}"
+                                 Style="{StaticResource ProfesseurListBoxStyle}"
+                                 ItemContainerStyle="{StaticResource ProfesseurListBoxItemStyle}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding NomComplet}" 
+                                               TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+
+                <!-- Panel droit - Groupes et formulaire -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header avec nom du professeur sélectionné -->
+                    <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="20 15" Margin="0 0 0 15">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="#20000000" Opacity="0.15"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{StaticResource SuccessGradient}" 
+                                    Width="30" Height="30" 
+                                    CornerRadius="15" 
+                                    Margin="0 0 12 0">
+                                <TextBlock Text="📚" FontSize="16" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel>
+                                <TextBlock Text="Groupes de :" 
+                                           FontSize="14" 
+                                           Foreground="#718096"/>
+                                <TextBlock Text="{Binding SelectedProfesseurForFilter.NomComplet, FallbackValue='Aucun professeur sélectionné'}" 
+                                           FontSize="16" FontWeight="Bold" 
+                                           Foreground="#2d3748"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bouton Nouveau Groupe -->
+                    <Button Grid.Row="1" Content="➕ Nouveau Groupe" 
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left"
+                            Margin="0 15 0 0"
+                            Click="AddGroupButton_Click"
+                            x:Name="AddGroupButton"/>
+
+                    <!-- Tableau des groupes -->
+                    <Border Grid.Row="2" Background="White" CornerRadius="12" Padding="2" Margin="0 15 0 0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                        </Border.Effect>
+                        <Grid>
+                            <!-- DataGrid des groupes -->
+                            <DataGrid ItemsSource="{Binding GroupesAAfficher}"
+                                      SelectedItem="{Binding SelectedGroupe, Mode=TwoWay}"
+                                      AutoGenerateColumns="False" IsReadOnly="True"
+                                      CanUserAddRows="False" 
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <!-- Nom du Groupe -->
+                                    <DataGridTextColumn Header="Groupe" Binding="{Binding NomDescriptifGroupe}" Width="180">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Padding" Value="12 0"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    
+                                    <!-- Matière -->
+                                    <DataGridTextColumn Header="Matière" Binding="{Binding Matiere.NomMatiere}" Width="150">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Padding" Value="12 0"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Foreground" Value="#38a169"/>
+                                                <Setter Property="FontWeight" Value="Medium"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    
+                                    <!-- Niveau -->
+                                    <DataGridTextColumn Header="Niveau" Binding="{Binding Niveau}" Width="100">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Padding" Value="12 0"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    
+                                    <!-- Actions -->
+                                    <DataGridTemplateColumn Header="Actions" Width="200">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8 0">
+                                                    <!-- Bouton Étudiants -->
+                                                    <Button Content="👥 Étudiants" 
+                                                            Style="{StaticResource ActionButton}"
+                                                            Background="{StaticResource InfoGradient}"
+                                                            Foreground="White"
+                                                            Click="StudentsButton_Click"
+                                                            Tag="{Binding}"/>
+                                                    
+                                                    <!-- Bouton Modifier -->
+                                                    <Button Content="✏ Modifier" 
+                                                            Style="{StaticResource ActionButton}"
+                                                            Background="{StaticResource SuccessGradient}"
+                                                            Foreground="White"
+                                                            Click="EditGroupButton_Click"
+                                                            Tag="{Binding}"/>
+                                                    
+                                                    <!-- Bouton Supprimer -->
+                                                    <Button Content="🗑 Supprimer" 
+                                                            Style="{StaticResource ActionButton}"
+                                                            Background="{StaticResource DangerGradient}"
+                                                            Foreground="White"
+                                                            Click="DeleteGroupButton_Click"
+                                                            Tag="{Binding}"
+                                                            Visibility="{Binding DataContext.CanUserArchive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            
+                            <!-- Message si aucun professeur sélectionné -->
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="👨‍🏫" FontSize="48" 
+                                           HorizontalAlignment="Center" 
+                                           Opacity="0.3" Margin="0 0 0 10"/>
+                                <TextBlock Text="Sélectionnez un professeur" 
+                                           FontSize="16" 
+                                           Foreground="#718096" 
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="pour voir ses groupes" 
+                                           FontSize="14" 
+                                           Foreground="#a0aec0" 
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Formulaire d'ajout/modification (caché par défaut) -->
+                    <Border Grid.Row="3" Background="White" 
+                            CornerRadius="12" Margin="0 15 0 0" Padding="20"
+                            Visibility="Collapsed"
+                            x:Name="FormPanel">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Titre du formulaire -->
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                                <Border Background="{StaticResource PrimaryGradient}" 
+                                        Width="30" Height="30" 
+                                        CornerRadius="15" 
+                                        Margin="0 0 12 0">
+                                    <TextBlock Text="📝" FontSize="16" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Text="Informations du Groupe" 
+                                               FontSize="16" FontWeight="Bold" 
+                                               Foreground="#2d3748"/>
+                                    <TextBlock Text="Complétez les informations du groupe" 
+                                               FontSize="10" 
+                                               Foreground="#718096"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Champs du formulaire -->
+                            <Grid Grid.Row="1" Margin="0 8 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Nom Groupe et Matière -->
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                                    <Label Content="Nom du Groupe:" Margin="2" FontSize="11"/>
+                                    <TextBox Text="{Binding NomDescriptifInput, UpdateSourceTrigger=PropertyChanged}" 
+                                             Margin="2" Padding="8" MinHeight="35"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
+                                    <Label Content="Matière:" Margin="2" FontSize="11"/>
+                                    <ComboBox ItemsSource="{Binding AllMatieres}"
+                                              SelectedItem="{Binding SelectedMatiereForForm}"
+                                              DisplayMemberPath="NomMatiere" 
+                                              Margin="2" MinHeight="35"/>
+                                </StackPanel>
+
+                                <!-- Professeur et Niveau -->
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
+                                    <Label Content="Professeur:" Margin="2" FontSize="11"/>
+                                    <ComboBox ItemsSource="{Binding AllProfesseursActifs}"
+                                              SelectedItem="{Binding SelectedProfesseurForForm}"
+                                              DisplayMemberPath="NomComplet"
+                                              IsEnabled="False" 
+                                              Margin="2" MinHeight="35"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="6 0 0 0">
+                                    <Label Content="Niveau:" Margin="2" FontSize="11"/>
+                                    <TextBox Text="{Binding NiveauInput, UpdateSourceTrigger=PropertyChanged}" 
+                                             Margin="2" Padding="8" MinHeight="35"/>
+                                </StackPanel>
+
+                                <!-- Notes -->
+                                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <Label Content="Notes:" Margin="2" FontSize="11"/>
+                                    <TextBox Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
+                                             TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" 
+                                             Margin="2" Padding="8"/>
+                                </StackPanel>
+
+                                <!-- Boutons du formulaire - À DROITE -->
+                                <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" 
+                                            Orientation="Vertical" 
+                                            VerticalAlignment="Center"
+                                            Margin="15 0 0 0">
+                                    <Button Content="💾 Enregistrer" 
+                                            Style="{StaticResource PrimaryButton}"
+                                            Click="SaveGroupButton_Click"
+                                            Margin="0 0 0 8"
+                                            Width="110"/>
+                                    <Button Content="❌ Annuler" 
+                                            Style="{StaticResource PrimaryButton}"
+                                            Background="{StaticResource DangerGradient}"
+                                            Click="CancelGroupButton_Click"
+                                            Width="110"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Barre de statut moderne -->
+                    <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                            CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                            <TextBlock Text="{Binding StatusMessage}" 
+                                       FontWeight="Medium" FontSize="13" 
+                                       Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

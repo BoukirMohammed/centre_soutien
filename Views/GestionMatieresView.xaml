@@ -6,143 +6,399 @@
              xmlns:local="clr-namespace:centre_soutien.Views"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800"
+             d:DesignHeight="700" d:DesignWidth="900"
              FontFamily="Segoe UI">
 
     <UserControl.Resources>
-        <!-- Styles communs -->
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="10 5"/>
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="MinWidth" Value="100"/>
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect">
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#40000000"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF4A6FA5"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="8 4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="70"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
+        <!-- Style moderne pour les Labels -->
         <Style TargetType="Label">
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- Style pour le DataGrid -->
+        <!-- Style moderne pour le DataGrid -->
         <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="0 0 0 15"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F5F5F5"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
             <Setter Property="GridLinesVisibility" Value="None"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="RowHeight" Value="50"/>
         </Style>
 
+        <!-- Style moderne pour les en-têtes DataGrid -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#FF3A4F7A"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Padding" Value="15 12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="45"/>
         </Style>
+
+        <!-- Convertisseur pour la visibilité -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:MatiereViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Titre -->
-        <TextBlock Grid.Row="0" Text="Gestion des Matières" 
-                   FontSize="24" FontWeight="SemiBold" Margin="0 0 0 15"
-                   Foreground="#FF3A4F7A">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Color="#20000000"/>
-            </TextBlock.Effect>
-        </TextBlock>
-
-        <!-- DataGrid -->
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Matieres}"
-                  SelectedItem="{Binding SelectedMatiere, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDMatiere}" Width="Auto"/>
-                <DataGridTextColumn Header="Nom Matière" Binding="{Binding NomMatiere}" Width="2*"/>
-                <DataGridTextColumn Header="Prix Standard" Binding="{Binding PrixStandardMensuel}" Width="*"/>
-                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="3*"/>
-                <DataGridCheckBoxColumn Header="Archivée" Binding="{Binding EstArchivee}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <!-- Formulaire -->
-        <Border Grid.Row="2" BorderThickness="0" CornerRadius="5" Margin="0 0 0 15"
-                Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#20000000"/>
-            </Border.Effect>
-            <Grid Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" Content="Nom Matière:"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NomMatiereInput, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <Label Grid.Row="1" Grid.Column="0" Content="Prix Standard:"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PrixInput, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-
-                <Label Grid.Row="2" Grid.Column="0" Content="Description:"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DescriptionInput, UpdateSourceTrigger=PropertyChanged}" 
-                         TextWrapping="Wrap" AcceptsReturn="True" MinLines="2"/>
-
-                <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Orientation="Vertical" 
-                            Margin="15 0 0 0" VerticalAlignment="Top">
-                    <Button Content="Ajouter" Command="{Binding AddMatiereCommand}"/>
-                    <Button Content="Modifier" Command="{Binding UpdateMatiereCommand}"/>
-                    <Button Content="Archiver" Command="{Binding ArchiveMatiereCommand}"/>
-                    <Button Content="Nouveau" Command="{Binding ClearFormCommand}" Margin="0 15 0 0"/>
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="📚" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Gestion des Matières" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Gérez les matières enseignées dans votre centre" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
                 </StackPanel>
-            </Grid>
-        </Border>
+            </Border>
 
-        <!-- Barre de statut -->
-        <StatusBar Grid.Row="3" Background="#FF3A4F7A" Foreground="White">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" FontWeight="SemiBold"/>
-            </StatusBarItem>
-        </StatusBar>
+            <!-- Tableau des matières -->
+            <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="2">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <DataGrid ItemsSource="{Binding Matieres}"
+                          SelectedItem="{Binding SelectedMatiere, Mode=TwoWay}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Nom Matière -->
+                        <DataGridTextColumn Header="Matière" Binding="{Binding NomMatiere}" Width="200">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="15 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Prix -->
+                        <DataGridTextColumn Header="Prix (DH/mois)" Binding="{Binding PrixStandardMensuel, StringFormat=C}" Width="120">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="15 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#38a169"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Description -->
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="15 0"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        
+                        <!-- Colonne Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="250">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10 0">
+                                        <!-- Bouton Détails -->
+                                        <Button Content="👁 Détails" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource InfoGradient}"
+                                                Foreground="White"
+                                                Click="DetailsButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Modifier -->
+                                        <Button Content="✏ Modifier" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource SuccessGradient}"
+                                                Foreground="White"
+                                                Click="EditButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Supprimer -->
+                                        <Button Content="🗑 Supprimer" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource DangerGradient}"
+                                                Foreground="White"
+                                                Click="DeleteButton_Click"
+                                                Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Bouton Ajouter Matière -->
+            <Button Grid.Row="2" Content="➕ Ajouter une Matière" 
+                    Style="{StaticResource PrimaryButton}"
+                    HorizontalAlignment="Center"
+                    Margin="0 20"
+                    FontSize="15"
+                    Click="AddSubjectButton_Click"
+                    x:Name="AddSubjectButton"/>
+
+            <!-- Formulaire d'ajout/modification (caché par défaut) -->
+            <Border Grid.Row="3" Background="White" 
+                    CornerRadius="12" Margin="0 0 0 20" Padding="20"
+                    Visibility="Collapsed"
+                    x:Name="FormPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Titre du formulaire -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                        <Border Background="{StaticResource PrimaryGradient}" 
+                                Width="30" Height="30" 
+                                CornerRadius="15" 
+                                Margin="0 0 12 0">
+                            <TextBlock Text="📝" FontSize="16" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Informations de la Matière" 
+                                       FontSize="16" FontWeight="Bold" 
+                                       Foreground="#2d3748"/>
+                            <TextBlock Text="Remplissez tous les champs nécessaires" 
+                                       FontSize="10" 
+                                       Foreground="#718096"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Champs du formulaire -->
+                    <Grid Grid.Row="1" Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Nom Matière et Prix -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Nom Matière:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding NomMatiereInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     Margin="2" Padding="8" MinHeight="35"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
+                            <Label Content="Prix Standard (DH):" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding PrixInput, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" 
+                                     Margin="2" Padding="8" MinHeight="35"/>
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                            <Label Content="Description:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding DescriptionInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" AcceptsReturn="True" MinHeight="60" Margin="2" Padding="8"/>
+                        </StackPanel>
+
+                        <!-- Boutons du formulaire - À DROITE -->
+                        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" 
+                                    Orientation="Vertical" 
+                                    VerticalAlignment="Center"
+                                    Margin="15 0 0 0">
+                            <Button Content="💾 Enregistrer" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Click="SaveButton_Click"
+                                    Margin="0 0 0 8"
+                                    Width="110"/>
+                            <Button Content="❌ Annuler" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Background="{StaticResource DangerGradient}"
+                                    Click="CancelButton_Click"
+                                    Width="110"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Barre de statut moderne -->
+            <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                    CornerRadius="8" Padding="15 10" Margin="0 20 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                               FontWeight="Medium" FontSize="13" 
+                               Foreground="White"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

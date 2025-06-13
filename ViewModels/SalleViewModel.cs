@@ -8,8 +8,10 @@ using System.Threading.Tasks;         // Pour Task
 using System.Windows.Input;           // Pour ICommand
 using System.Linq;                    // Pour des opérations LINQ sur la collection si besoin
 using centre_soutien.DataAccess.Repositories;
-namespace centre_soutien.ViewModels // Ajuste le namespace
-{
+using centre_soutien.Services;
+
+namespace centre_soutien.ViewModels {// Ajuste le namespace
+
     // Classe de base pour ICommand (RelayCommand)
     // Tu peux mettre cette classe dans un dossier Helpers/ ou Commands/
     // Si tu l'as déjà créée ailleurs, tu peux supprimer cette implémentation ici.
@@ -17,12 +19,15 @@ namespace centre_soutien.ViewModels // Ajuste le namespace
     {
         private readonly Action<object> _execute;
         private readonly Predicate<object> _canExecute;
+        // La commande d'archivage utilise CanUserArchive dans son prédicat CanExecute
+    
 
         public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
+
 
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
         public void Execute(object parameter) => _execute(parameter);
@@ -36,6 +41,9 @@ namespace centre_soutien.ViewModels // Ajuste le namespace
 
     public class SalleViewModel : INotifyPropertyChanged
     {
+
+        public bool CanUserArchive => CurrentUserSession.IsAdmin; // Ou CurrentUserSession.IsAdmin || CurrentUserSession.IsSecretaire si la secrétaire peut aussi archiver certains types.
+
         private readonly SalleRepository _salleRepository;
 
         private ObservableCollection<Salle> _salles;
@@ -117,7 +125,10 @@ namespace centre_soutien.ViewModels // Ajuste le namespace
             LoadSallesCommand = new RelayCommand(async param => await LoadSallesAsync());
             AddSalleCommand = new RelayCommand(async param => await AddSalleAsync(), CanAddOrUpdateSalle); // CanExecute partagé
             UpdateSalleCommand = new RelayCommand(async param => await UpdateSalleAsync(), CanUpdateOrArchiveSalle);
-            ArchiveSalleCommand = new RelayCommand(async param => await ArchiveSalleAsync(), CanUpdateOrArchiveSalle);
+            ArchiveSalleCommand = new RelayCommand(
+                async param => await ArchiveSalleAsync(),
+                param => SelectedSalle != null && CanUserArchive // Le bouton ne s'active que si un étudiant est sélectionné ET l'utilisateur a le droit
+            );
             ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
 
             // Charger les salles initialement au démarrage du ViewModel

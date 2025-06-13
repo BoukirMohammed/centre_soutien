@@ -3,103 +3,506 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:centre_soutien.Views"
+             xmlns:converters="clr-namespace:centre_soutien.Views"
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+             xmlns:converters1="clr-namespace:centre_soutien.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="750" d:DesignWidth="950"
+             FontFamily="Segoe UI"
+             KeyDown="UserControl_KeyDown"
+             Focusable="True">
+
+    <UserControl.Resources>
+        <!-- Gradient Brushes pour un look moderne -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="InfoGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4299e1" Offset="0"/>
+            <GradientStop Color="#3182ce" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="WarningGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#ed8936" Offset="0"/>
+            <GradientStop Color="#dd6b20" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour bouton principal -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#7c8df0" Offset="0"/>
+                                            <GradientStop Color="#8a5fb8" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#e2e8f0"/>
+                                <Setter Property="Foreground" Value="#a0aec0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style pour petits boutons d'action -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="6 3"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#e2e8f0"/>
+                                <Setter Property="Foreground" Value="#a0aec0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les PasswordBox -->
+        <Style TargetType="PasswordBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                x:Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryGradient}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style moderne pour les ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10 8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#e0e6ed"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinHeight" Value="35"/>
+        </Style>
+
+        <!-- Style moderne pour les Labels -->
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Style moderne pour le DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#fafbfc"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="RowHeight" Value="40"/>
+        </Style>
+
+        <!-- Style moderne pour les en-têtes DataGrid -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{StaticResource PrimaryGradient}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10 8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+
+        <!-- Convertisseurs -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!-- Dans les ressources, ajoute aussi -->
+        <converters1:ActiveToggleTextConverter x:Key="ActiveToggleIconConverter"/>
+        <converters1:ActiveToggleTooltipConverter x:Key="ActiveToggleTooltipConverter"/>
+        <converters1:ActiveToggleColorConverter x:Key="ActiveToggleColorConverter"/>
+        <converters1:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <converters1:ArchiveStatusToTextConverter x:Key="StatusToTextConverter"/>
+
+    </UserControl.Resources>
 
     <d:UserControl.DataContext>
         <viewModels:GestionUtilisateursViewModel/>
     </d:UserControl.DataContext>
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Titre -->
-            <RowDefinition Height="*"/>    <!-- DataGrid -->
-            <RowDefinition Height="Auto"/> <!-- Formulaire -->
-            <RowDefinition Height="Auto"/> <!-- StatusBar -->
-        </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0" Text="Gestion des Utilisateurs de l'Application" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Utilisateurs}"
-                  SelectedItem="{Binding SelectedUtilisateur, Mode=TwoWay}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False" Margin="0,0,0,10" VerticalScrollBarVisibility="Auto">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDUtilisateur, Mode=OneWay}" Width="50"/>
-                <DataGridTextColumn Header="Login" Binding="{Binding Login, Mode=OneWay}" Width="*"/>
-                <DataGridTextColumn Header="Nom Complet" Binding="{Binding NomComplet, Mode=OneWay}" Width="2*"/>
-                <DataGridTextColumn Header="Rôle" Binding="{Binding Role, Mode=OneWay}" Width="*"/>
-                <DataGridCheckBoxColumn Header="Actif" Binding="{Binding EstActif, Mode=OneWay}" Width="Auto"/>
-                <DataGridTemplateColumn Header="Actions" Width="Auto">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding DataContext.ToggleActivationButtonText, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                    Command="{Binding DataContext.ToggleActivationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" 
-                                    Padding="5,2" Margin="2" FontSize="10"/>
-                            <!-- Tu pourrais ajouter un bouton "Changer MDP" ici aussi si tu veux une action par ligne -->
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,0,0,10">
-            <Grid x:Name="FormGrid" IsEnabled="{Binding IsEditing}"> <!-- Formulaire activé seulement en mode édition/ajout -->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/> <!-- Labels -->
-                    <ColumnDefinition Width="*"/>    <!-- Controls -->
-                    <ColumnDefinition Width="150"/>  <!-- Boutons de formulaire -->
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/> <!-- Login -->
-                    <RowDefinition Height="Auto"/> <!-- Nom Complet -->
-                    <RowDefinition Height="Auto"/> <!-- Rôle -->
-                    <RowDefinition Height="Auto"/> <!-- Mot de Passe (pour ajout/changement) -->
-                    <RowDefinition Height="Auto"/> <!-- Actif -->
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" Content="Login:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LoginInput, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5"
-                         IsEnabled="{Binding Path=SelectedUtilisateur, Converter={StaticResource IsNullConverter}}"/> <!-- Editable seulement à l'ajout -->
-
-                <Label Grid.Row="1" Grid.Column="0" Content="Nom Complet:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NomCompletInput, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5"/>
-
-                <Label Grid.Row="2" Grid.Column="0" Content="Rôle:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" Padding="5"
-                          ItemsSource="{Binding RolesDisponibles}"
-                          SelectedItem="{Binding SelectedRoleInput, Mode=TwoWay}"/>
-                
-                <!-- Section Mot de Passe - Visible seulement à l'ajout ou si on clique sur "Changer MDP" (logique à affiner) -->
-                <Label Grid.Row="3" Grid.Column="0" Content="Mot de Passe:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <PasswordBox x:Name="UserPasswordBoxForm" Grid.Row="3" Grid.Column="1" Margin="5" Padding="5"
-                             ToolTip="Entrez un nouveau mot de passe pour un nouvel utilisateur ou pour changer le mot de passe existant."/>
-
-                <CheckBox Grid.Row="4" Grid.Column="1" Content="Compte Actif" IsChecked="{Binding IsActifInput}" VerticalAlignment="Center" Margin="5"/>
-
-                <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" Orientation="Vertical" Margin="10,0,0,0" VerticalAlignment="Top">
-                    <Button Content="Sauvegarder" Command="{Binding SaveUtilisateurCommand}" 
-                            CommandParameter="{Binding ElementName=UserPasswordBoxForm}" Margin="0,5" Padding="5"/>
-                    <Button Content="Changer Mot de Passe" Command="{Binding ChangePasswordCommand}"
-                            CommandParameter="{Binding ElementName=UserPasswordBoxForm}" Margin="0,5" Padding="5"
-                            IsEnabled="{Binding Path=SelectedUtilisateur, Converter={StaticResource IsNotNullConverter}}"/> <!-- Actif si un user est sélectionné -->
-                    <Button Content="Annuler" Command="{Binding CancelEditCommand}" Margin="0,15,0,5" Padding="5"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.05">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         
-        <!-- Bouton pour passer en mode ajout, en dehors du formulaire principal qui est désactivé par défaut -->
-        <Button Grid.Row="2" Content="Nouvel Utilisateur" Command="{Binding PrepareAddUtilisateurCommand}" 
-                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,-30" Padding="10,5"/> <!-- Ajuster la marge pour le positionnement -->
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
+            <!-- En-tête moderne -->
+            <Border Grid.Row="0" Background="White" CornerRadius="12" Margin="0 0 0 20" Padding="25 20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{StaticResource PrimaryGradient}" 
+                            Width="50" Height="50" 
+                            CornerRadius="25" 
+                            Margin="0 0 20 0">
+                        <TextBlock Text="👥" FontSize="24" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="Gestion des Utilisateurs" 
+                                   FontSize="26" FontWeight="Bold" 
+                                   Foreground="#2d3748"/>
+                        <TextBlock Text="Gérez les comptes utilisateurs et leurs accès à l'application" 
+                                   FontSize="14" 
+                                   Foreground="#718096" 
+                                   Margin="0 4 0 0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
 
-        <StatusBar Grid.Row="3">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" />
-            </StatusBarItem>
-        </StatusBar>
+            <!-- Boutons d'action principaux -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 20 0 0">
+                <Button Content="➕ Nouvel Utilisateur" 
+                        Style="{StaticResource PrimaryButton}"
+                        FontSize="15"
+                        Click="AddUtilisateurButton_Click"
+                        x:Name="AddUtilisateurButton"/>
+                
+                <Button Content="🔄 Actualiser" 
+                        Style="{StaticResource PrimaryButton}"
+                        Background="{StaticResource InfoGradient}"
+                        FontSize="15"
+                        Command="{Binding LoadUtilisateursCommand}"
+                        Margin="10 5 5 5"/>
+            </StackPanel>
+
+            <!-- Formulaire d'ajout/modification (caché par défaut) -->
+            <Border Grid.Row="2" Background="White" 
+                    CornerRadius="12" Margin="0 15 0 0" Padding="20"
+                    Visibility="Collapsed"
+                    x:Name="FormPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Titre du formulaire -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                        <Border Background="{StaticResource PrimaryGradient}" 
+                                Width="30" Height="30" 
+                                CornerRadius="15" 
+                                Margin="0 0 12 0">
+                            <TextBlock Text="🔐" FontSize="16" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Informations de l'Utilisateur" 
+                                       FontSize="16" FontWeight="Bold" 
+                                       Foreground="#2d3748"/>
+                            <TextBlock Text="Configurez les paramètres de connexion et d'accès" 
+                                       FontSize="10" 
+                                       Foreground="#718096"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Champs du formulaire -->
+                    <Grid Grid.Row="1" Margin="0 8 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Première ligne : Login et Nom complet -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Login *:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding LoginInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Nom d'utilisateur pour se connecter" 
+                                     Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
+                            <Label Content="Nom complet *:" Margin="2" FontSize="11"/>
+                            <TextBox Text="{Binding NomCompletInput, UpdateSourceTrigger=PropertyChanged}" 
+                                     ToolTip="Nom complet de l'utilisateur" 
+                                     Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Deuxième ligne : Rôle et Statut -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
+                            <Label Content="Rôle *:" Margin="2" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding RolesDisponibles}"
+                                      SelectedItem="{Binding SelectedRoleInput, Mode=TwoWay}"
+                                      ToolTip="Niveau d'autorisation de l'utilisateur"
+                                      Margin="2"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="6 0 0 0">
+                            <Label Content="Statut :" Margin="2" FontSize="11"/>
+                            <CheckBox Content="Compte actif" 
+                                      IsChecked="{Binding IsActifInput}" 
+                                      VerticalAlignment="Center" 
+                                      Margin="7 8"/>
+                        </StackPanel>
+
+                        <!-- Troisième ligne : Mot de passe -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 0">
+                            <Label Content="Mot de passe :" Margin="2" FontSize="11"/>
+                            <PasswordBox x:Name="UserPasswordBox"
+                                         ToolTip="Nouveau mot de passe (requis pour nouvel utilisateur)"
+                                         Margin="2"/>
+                        </StackPanel>
+
+                        <!-- Boutons du formulaire - À DROITE -->
+                        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" 
+                                    Orientation="Vertical" 
+                                    VerticalAlignment="Center"
+                                    Margin="15 0 0 0">
+                            <Button Content="💾 Enregistrer" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Click="SaveUtilisateurButton_Click"
+                                    Margin="0 0 0 8"
+                                    Width="110"/>
+                            <Button Content="🔑 Changer MDP" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Background="{StaticResource WarningGradient}"
+                                    Click="ChangePasswordButton_Click"
+                                    Margin="0 0 0 8"
+                                    Width="110"/>
+                            <Button Content="❌ Annuler" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    Background="{StaticResource DangerGradient}"
+                                    Click="CancelUtilisateurButton_Click"
+                                    Width="110"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Tableau des utilisateurs -->
+            <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="2" Margin="0 15 0 0"
+                    x:Name="DataGridPanel">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Border.Effect>
+                <DataGrid ItemsSource="{Binding Utilisateurs}"
+                          SelectedItem="{Binding SelectedUtilisateur, Mode=TwoWay}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserAddRows="False" 
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Login et Nom -->
+                        <DataGridTemplateColumn Header="Utilisateur" Width="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Vertical" Margin="5">
+                                        <TextBlock Text="{Binding Login}" 
+                                                   FontWeight="SemiBold" FontSize="13" Foreground="#2d3748"/>
+                                        <TextBlock Text="{Binding NomComplet}" 
+                                                   FontSize="11" Foreground="#718096"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Rôle -->
+                        <DataGridTemplateColumn Header="Rôle" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="12" Padding="8 4" Margin="3">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#e6fffa"/>
+                                        </Border.Background>
+                                        <TextBlock Text="{Binding Role}" 
+                                                   FontWeight="Bold" FontSize="10" 
+                                                   Foreground="#319795"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Statut -->
+                        <DataGridTemplateColumn Header="Statut" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding EstActif, Converter={StaticResource StatusToColorConverter}}" 
+                                            CornerRadius="8" Padding="6 3" Margin="3">
+                                        <TextBlock Text="{Binding EstActif, Converter={StaticResource StatusToTextConverter}}" 
+                                                   Foreground="White" FontSize="9" FontWeight="Bold"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!-- Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0">
+                                        <!-- Bouton Modifier -->
+                                        <Button Content="✏" ToolTip="Modifier" 
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{StaticResource InfoGradient}"
+                                                Foreground="White"
+                                                Click="EditUtilisateurButton_Click"
+                                                Tag="{Binding}"/>
+                                        
+                                        <!-- Bouton Activer/Désactiver -->
+                                        <Button Content="{Binding EstActif, Converter={StaticResource ActiveToggleIconConverter}}" 
+                                                ToolTip="{Binding EstActif, Converter={StaticResource ActiveToggleTooltipConverter}}"
+                                                Style="{StaticResource ActionButton}"
+                                                Background="{Binding EstActif, Converter={StaticResource ActiveToggleColorConverter}}"
+                                                Foreground="White"
+                                                Click="ToggleUtilisateurButton_Click"
+                                                Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Barre de statut moderne -->
+            <Border Grid.Row="4" Background="{StaticResource PrimaryGradient}" 
+                    CornerRadius="8" Padding="15 10" Margin="0 15 0 0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#30000000" Opacity="0.3"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                    <TextBlock Text="{Binding StatusMessage, FallbackValue='Prêt - Gérez vos utilisateurs en toute sécurité'}" 
+                               FontWeight="Medium" FontSize="13" 
+                               Foreground="White"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

@@ -1,0 +1,51 @@
+﻿<Window x:Class="centre_soutien.Views.EtudiantsInscritsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:centre_soutien.Views"
+        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
+        mc:Ignorable="d"
+        Title="Étudiants Inscrits" Height="450" Width="600"
+        WindowStartupLocation="CenterOwner" MinHeight="300" MinWidth="400">
+    <!-- -->
+    <!-- <d:Window.DataContext> -->
+    <!--     <viewModels:EtudiantsInscritsViewModel GroupeId="0" InscriptionRepo="{x:Null}" GroupeRepo="{x:Null}"/> -->
+    <!-- </d:Window.DataContext> -->
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Titre du groupe -->
+            <RowDefinition Height="*"/>    <!-- DataGrid des étudiants -->
+            <RowDefinition Height="Auto"/> <!-- StatusBar -->
+            <RowDefinition Height="Auto"/> <!-- Bouton Fermer -->
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Margin="0,0,0,10" FontSize="18" FontWeight="SemiBold">
+            <Run Text="Étudiants inscrits au groupe :"/>
+            <Run Text="{Binding CurrentGroupe.NomDescriptifGroupe, FallbackValue='Chargement...'}" FontWeight="Bold"/>
+            <Run Text="{Binding CurrentGroupe.Matiere.NomMatiere, StringFormat=' ({}Matière: {0})', FallbackValue=''}"/>
+        </TextBlock>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding EtudiantsInscrits}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  VerticalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding IDEtudiant}" Width="Auto"/>
+                <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*"/>
+                <DataGridTextColumn Header="Prénom" Binding="{Binding Prenom}" Width="*"/>
+                <DataGridTextColumn Header="Téléphone" Binding="{Binding Telephone}" Width="Auto"/>
+                <DataGridTextColumn Header="Lycée" Binding="{Binding Lycee}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StatusBar Grid.Row="2" Margin="0,5,0,0">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}"/>
+            </StatusBarItem>
+        </StatusBar>
+        
+        <Button Grid.Row="3" Content="Fermer" IsCancel="True" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="10,5"/>
+    </Grid>
+</Window>

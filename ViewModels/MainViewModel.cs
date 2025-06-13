@@ -1,14 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks; // Nécessaire pour Task
+using System.Threading.Tasks;
 using System.Windows.Input;
-using centre_soutien.Commands; // Assure-toi que ce using pointe vers ta classe RelayCommand
-using centre_soutien.Services; // Pour CurrentUserSession
+using System.Windows.Threading; // Pour le timer
+using System;
+using centre_soutien.Commands;
+using centre_soutien.Services;
 
 namespace centre_soutien.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        private readonly DispatcherTimer _timer;
+
         private object? _currentViewViewModel;
         public object? CurrentViewViewModel
         {
@@ -16,6 +20,29 @@ namespace centre_soutien.ViewModels
             set
             {
                 _currentViewViewModel = value;
+                OnPropertyChanged();
+                UpdateCurrentViewTitle();
+            }
+        }
+
+        private string _currentViewTitle = "Tableau de bord";
+        public string CurrentViewTitle
+        {
+            get => _currentViewTitle;
+            set
+            {
+                _currentViewTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _currentDateTime = DateTime.Now;
+        public DateTime CurrentDateTime
+        {
+            get => _currentDateTime;
+            set
+            {
+                _currentDateTime = value;
                 OnPropertyChanged();
             }
         }
@@ -28,7 +55,7 @@ namespace centre_soutien.ViewModels
         public GroupeViewModel GroupeVM { get; private set; }
         public InscriptionViewModel InscriptionVM { get; private set; }
         public PlanningViewModel PlanningVM { get; private set; }
-        public GestionUtilisateursViewModel? GestionUtilisateursVM { get; private set; } // <<<< DÉCLARÉ ET RENDU NULLABLE
+        public GestionUtilisateursViewModel? GestionUtilisateursVM { get; private set; }
 
         // Commandes pour la navigation
         public ICommand ShowSallesViewCommand { get; }
@@ -38,11 +65,13 @@ namespace centre_soutien.ViewModels
         public ICommand ShowGroupesViewCommand { get; }
         public ICommand ShowInscriptionsViewCommand { get; }
         public ICommand ShowPlanningViewCommand { get; }
-        public ICommand? ShowGestionUtilisateursCommand { get; } // <<<< RENDU NULLABLE
+        public ICommand? ShowGestionUtilisateursCommand { get; }
 
+        // Propriétés pour l'interface utilisateur
         public bool IsAdmin { get; private set; }
         public bool IsSecretaire { get; private set; }
         public string? NomUtilisateurConnecte { get; private set; }
+        public string CurrentUserRole { get; private set; } = "";
 
         public MainViewModel()
         {
@@ -50,14 +79,25 @@ namespace centre_soutien.ViewModels
             if (CurrentUserSession.IsUserLoggedIn)
             {
                 IsAdmin = CurrentUserSession.IsAdmin;
-                IsSecretaire = CurrentUserSession.IsSecretaire; // Tu peux aussi faire IsSecretaire = CurrentUserSession.CurrentUser?.Role == "Secretaire";
+                IsSecretaire = CurrentUserSession.IsSecretaire;
                 NomUtilisateurConnecte = CurrentUserSession.CurrentUser?.NomComplet ?? CurrentUserSession.CurrentUser?.Login;
+                CurrentUserRole = CurrentUserSession.CurrentUser?.Role ?? "Utilisateur";
             }
             else
             {
                 IsAdmin = false; 
                 IsSecretaire = false;
+                NomUtilisateurConnecte = "Utilisateur non connecté";
+                CurrentUserRole = "Aucun";
             }
+
+            // Initialiser le timer pour l'heure
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += (s, e) => CurrentDateTime = DateTime.Now;
+            _timer.Start();
 
             // Initialiser les ViewModels enfants
             SalleVM = new SalleViewModel();
@@ -68,60 +108,96 @@ namespace centre_soutien.ViewModels
             InscriptionVM = new InscriptionViewModel();
             PlanningVM = new PlanningViewModel();
             
-            if (IsAdmin) // Créer le ViewModel et la commande seulement si Admin
+            if (IsAdmin)
             {
                 GestionUtilisateursVM = new GestionUtilisateursViewModel();
-                ShowGestionUtilisateursCommand = new RelayCommand(async param => await NavigateTo(GestionUtilisateursVM), param => CanNavigateToGestionUtilisateurs(param));
+                ShowGestionUtilisateursCommand = new RelayCommand(
+                    async param => await NavigateTo(GestionUtilisateursVM), 
+                    param => CanNavigateToGestionUtilisateurs(param));
             }
 
-
             // Définir les commandes de navigation
-            // Pour les CanExecute, tu peux ajouter des prédicats si certaines vues ne sont pas accessibles à tous les rôles qui peuvent se logger
             ShowSallesViewCommand = new RelayCommand(async param => await NavigateTo(SalleVM));
             ShowMatieresViewCommand = new RelayCommand(async param => await NavigateTo(MatiereVM));
-            ShowProfesseursViewCommand = new RelayCommand(async param => await NavigateTo(ProfesseurVM)); // Potentiellement Admin seulement ? Adapte le CanExecute.
+            ShowProfesseursViewCommand = new RelayCommand(async param => await NavigateTo(ProfesseurVM));
             ShowEtudiantsViewCommand = new RelayCommand(async param => await NavigateTo(EtudiantVM));
             ShowGroupesViewCommand = new RelayCommand(async param => await NavigateTo(GroupeVM));
             ShowInscriptionsViewCommand = new RelayCommand(async param => await NavigateTo(InscriptionVM));
             ShowPlanningViewCommand = new RelayCommand(async param => await NavigateTo(PlanningVM));
             
             // Vue par défaut
-            // Si l'utilisateur est loggué (ce qui devrait toujours être le cas si MainViewModel est créé après le login)
             if (CurrentUserSession.IsUserLoggedIn)
             {
-                _ = NavigateTo(SalleVM); 
-            }
-            else
-            {
-                // Gérer le cas où MainViewModel est créé sans utilisateur loggué (ex: pour le designer XAML)
-                // CurrentViewViewModel = null; // ou une vue "Bienvenue" / "Non connecté"
+                _ = NavigateTo(EtudiantVM); // Commencer par les étudiants (plus pertinent pour la secrétaire)
             }
         }
         
-        // Prédicat pour la commande de gestion des utilisateurs
         private bool CanNavigateToGestionUtilisateurs(object? parameter)
         {
-            return IsAdmin; // Seul l'admin peut accéder à cette vue
+            return IsAdmin;
         }
 
+        private void UpdateCurrentViewTitle()
+        {
+            CurrentViewTitle = CurrentViewViewModel switch
+            {
+                SalleViewModel => "Gestion des Salles",
+                MatiereViewModel => "Gestion des Matières",
+                ProfesseurViewModel => "Gestion des Professeurs",
+                EtudiantViewModel => "Gestion des Étudiants",
+                GroupeViewModel => "Gestion des Groupes",
+                InscriptionViewModel => "Gestion des Inscriptions",
+                PlanningViewModel => "Planification des Séances",
+                GestionUtilisateursViewModel => "Gestion des Utilisateurs",
+                _ => "Tableau de bord"
+            };
+        }
 
         private async Task NavigateTo(object? viewModel)
         {
-            if (viewModel == null) return; // Sécurité si un ViewModel conditionnel (comme GestionUtilisateursVM) est null
+            if (viewModel == null) return;
 
             CurrentViewViewModel = viewModel;
 
             // Rafraîchir les données du ViewModel qui vient d'être activé
-            if (viewModel is SalleViewModel svm) { await svm.LoadSallesAsync(); }
-            else if (viewModel is MatiereViewModel mvm) { await mvm.LoadMatieresAsync(); }
-            else if (viewModel is ProfesseurViewModel pvm) { await pvm.LoadProfesseursAsync(); }
-            else if (viewModel is EtudiantViewModel evm) { await evm.LoadEtudiantsAsync(); }
-            else if (viewModel is GroupeViewModel gvm) { await gvm.LoadAllDataAsync(); }
-            else if (viewModel is InscriptionViewModel ivm) { await ivm.LoadAllDataAsync(); }
-            else if (viewModel is PlanningViewModel planvm) { await planvm.LoadAllInitialDataAsync(); }
-            else if (viewModel is GestionUtilisateursViewModel guvm) // <<< AJOUTÉ ICI
-            { 
-                await guvm.LoadUtilisateursAsync(); // Assure-toi que cette méthode existe et est public async Task
+            try
+            {
+                switch (viewModel)
+                {
+                    case SalleViewModel svm:
+                        await svm.LoadSallesAsync();
+                        break;
+                    case MatiereViewModel mvm:
+                        await mvm.LoadMatieresAsync();
+                        break;
+                    case ProfesseurViewModel pvm:
+                        await pvm.LoadProfesseursAsync();
+                        break;
+                    case EtudiantViewModel evm:
+                        await evm.LoadEtudiantsAsync();
+                        break;
+                    case GroupeViewModel gvm:
+                        await gvm.LoadAllInitialDataAsync();
+                        break;
+                    case InscriptionViewModel ivm:
+                        await ivm.LoadAllDataAsync();
+                        break;
+                    case PlanningViewModel planvm:
+                        await planvm.LoadAllInitialDataAsync();
+                        break;
+                    case GestionUtilisateursViewModel guvm:
+                        await guvm.LoadUtilisateursAsync();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gérer les erreurs de chargement
+                System.Windows.MessageBox.Show(
+                    $"Erreur lors du chargement des données :\n{ex.Message}",
+                    "Erreur de chargement",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Warning);
             }
         }
 

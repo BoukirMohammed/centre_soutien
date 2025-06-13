@@ -26,6 +26,22 @@ namespace centre_soutien.DataAccess
                                     .ToListAsync();
             }
         }
+        // Dans DataAccess/InscriptionRepository.cs
+
+// ... (autres méthodes) ...
+
+        public async Task<List<Inscription>> GetActiveInscriptionsForGroupeAsync(int groupeId)
+        {
+            using (var context = CreateContext())
+            {
+                return await context.Inscriptions
+                    .Where(i => i.IDGroupe == groupeId && i.EstActif)
+                    .Include(i => i.Etudiant) // Charger les détails de l'étudiant
+                    .OrderBy(i => i.Etudiant!.Nom) // Utiliser ! si Etudiant est censé être toujours là
+                    .ThenBy(i => i.Etudiant!.Prenom)
+                    .ToListAsync();
+            }
+        }
         
         // Obtenir les inscriptions actives pour un étudiant spécifique
         public async Task<List<Inscription>> GetActiveInscriptionsForEtudiantAsync(int etudiantId)
