@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 namespace centre_soutien.Models
 {
     public class Paiement

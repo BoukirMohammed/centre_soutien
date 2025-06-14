@@ -56,6 +56,8 @@ namespace centre_soutien.ViewModels
         public InscriptionViewModel InscriptionVM { get; private set; }
         public PlanningViewModel PlanningVM { get; private set; }
         public GestionUtilisateursViewModel? GestionUtilisateursVM { get; private set; }
+        public PaiementViewModel? PaimentVM { get; private set; }
+
 
         // Commandes pour la navigation
         public ICommand ShowSallesViewCommand { get; }
@@ -66,6 +68,8 @@ namespace centre_soutien.ViewModels
         public ICommand ShowInscriptionsViewCommand { get; }
         public ICommand ShowPlanningViewCommand { get; }
         public ICommand? ShowGestionUtilisateursCommand { get; }
+        public ICommand? ShowGestionPaiementCommand { get; }
+
 
         // Propriétés pour l'interface utilisateur
         public bool IsAdmin { get; private set; }
@@ -107,7 +111,7 @@ namespace centre_soutien.ViewModels
             GroupeVM = new GroupeViewModel();
             InscriptionVM = new InscriptionViewModel();
             PlanningVM = new PlanningViewModel();
-            
+            PaimentVM = new PaiementViewModel();
             if (IsAdmin)
             {
                 GestionUtilisateursVM = new GestionUtilisateursViewModel();
@@ -124,7 +128,8 @@ namespace centre_soutien.ViewModels
             ShowGroupesViewCommand = new RelayCommand(async param => await NavigateTo(GroupeVM));
             ShowInscriptionsViewCommand = new RelayCommand(async param => await NavigateTo(InscriptionVM));
             ShowPlanningViewCommand = new RelayCommand(async param => await NavigateTo(PlanningVM));
-            
+            ShowGestionPaiementCommand = new RelayCommand(async param => await NavigateTo(PaimentVM));
+
             // Vue par défaut
             if (CurrentUserSession.IsUserLoggedIn)
             {
@@ -149,6 +154,7 @@ namespace centre_soutien.ViewModels
                 InscriptionViewModel => "Gestion des Inscriptions",
                 PlanningViewModel => "Planification des Séances",
                 GestionUtilisateursViewModel => "Gestion des Utilisateurs",
+                PaiementViewModel => "Gestion Paiement",
                 _ => "Tableau de bord"
             };
         }

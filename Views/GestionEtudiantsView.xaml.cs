@@ -80,24 +80,35 @@ namespace centre_soutien.Views
             }
         }
 
-        // Afficher les détails d'un étudiant
+        /// <summary>
+        /// Gestionnaire pour le bouton Détails - ouvre la fenêtre de détails de l'étudiant
+        /// </summary>
         private void DetailsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is Etudiant etudiant)
+            try
             {
-                // Créer un message avec tous les détails
-                string details = $"📋 DÉTAILS DE L'ÉTUDIANT\n" +
-                               $"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
-                               $"👤 Nom complet: {etudiant.Nom} {etudiant.Prenom}\n" +
-                               $"🎂 Date de naissance: {(etudiant.DateNaissance != null ? DateTime.Parse(etudiant.DateNaissance).ToString("dd/MM/yyyy") : "Non renseignée")}\n" +
-                               $"📞 Téléphone: {etudiant.Telephone ?? "Non renseigné"}\n" +
-                               $"🏫 Lycée: {etudiant.Lycee ?? "Non renseigné"}\n" +
-                               $"🏠 Adresse: {etudiant.Adresse ?? "Non renseignée"}\n" +
-                               $"📝 Notes: {etudiant.Notes ?? "Aucune note"}\n" +
-                               $"📅 Inscrit le: {(etudiant.DateInscriptionSysteme != null ? DateTime.Parse(etudiant.DateInscriptionSysteme).ToString("dd/MM/yyyy") : "Non renseigné")}\n" +
-                               $"📁 Statut: {(etudiant.EstArchive ? "Archivé" : "Actif")}";
-
-                MessageBox.Show(details, "Informations détaillées", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Récupérer l'étudiant depuis le Tag du bouton
+                if (sender is Button button && button.Tag is Etudiant etudiant)
+                {
+                    // Créer et ouvrir la fenêtre de détails
+                    var detailsWindow = new EtudiantDetailleWindow(etudiant);
+                    detailsWindow.Owner = Window.GetWindow(this); // Définir la fenêtre parent
+                    detailsWindow.ShowDialog(); // Ouvrir en mode modal
+                }
+                else
+                {
+                    MessageBox.Show("Impossible de récupérer les informations de l'étudiant sélectionné.", 
+                        "Erreur", 
+                        MessageBoxButton.OK, 
+                        MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors de l'ouverture des détails : {ex.Message}", 
+                    "Erreur", 
+                    MessageBoxButton.OK, 
+                    MessageBoxImage.Error);
             }
         }
 

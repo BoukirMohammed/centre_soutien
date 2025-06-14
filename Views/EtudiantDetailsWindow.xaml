@@ -1,0 +1,402 @@
+﻿<Window x:Class="centre_soutien.Views.EtudiantDetailleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:centre_soutien.Views"
+        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels"
+        mc:Ignorable="d"
+        Title="Détails de l'Étudiant" 
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI"
+        Background="#f7fafc">
+
+    <Window.Resources>
+        <!-- Gradient Brushes -->
+        <LinearGradientBrush x:Key="PrimaryGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="DangerGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#f56565" Offset="0"/>
+            <GradientStop Color="#e53e3e" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="WarningGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#ed8936" Offset="0"/>
+            <GradientStop Color="#dd6b20" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour les cartes -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="3" Color="#20000000" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style pour les boutons -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Padding" Value="15 8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                x:Name="border">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style pour les TextBlocks de titre -->
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2d3748"/>
+            <Setter Property="Margin" Value="0 0 0 10"/>
+        </Style>
+
+        <!-- Style pour les labels -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#4a5568"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0 0 0 3"/>
+        </Style>
+
+        <!-- Style pour les valeurs -->
+        <Style x:Key="ValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#2d3748"/>
+            <Setter Property="Margin" Value="0 0 0 10"/>
+        </Style>
+    </Window.Resources>
+
+    <d:Window.DataContext>
+        <viewModels:EtudiantDetailsViewModel/>
+    </d:Window.DataContext>
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20">
+                
+                <!-- En-tête avec informations principales -->
+                <Border Style="{StaticResource CardStyle}" Background="{StaticResource PrimaryGradient}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Avatar -->
+                        <Border Grid.Column="0" 
+                                Background="White" 
+                                Width="80" Height="80" 
+                                CornerRadius="40" 
+                                Margin="0 0 20 0">
+                            <TextBlock Text="👤" FontSize="40" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource PrimaryGradient}"/>
+                        </Border>
+
+                        <!-- Informations principales -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding NomCompletEtudiant}" 
+                                       FontSize="24" FontWeight="Bold" 
+                                       Foreground="White"/>
+                            <TextBlock Text="{Binding AgeEtudiant}" 
+                                       FontSize="14" 
+                                       Foreground="White" 
+                                       Opacity="0.9"
+                                       Margin="0 2 0 0"/>
+                            <TextBlock Text="{Binding EtudiantActuel.Lycee}" 
+                                       FontSize="14" 
+                                       Foreground="White" 
+                                       Opacity="0.8"
+                                       Margin="0 2 0 0"/>
+                        </StackPanel>
+
+                        <!-- Boutons d'action -->
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="📞 Appeler" 
+                                    Style="{StaticResource ModernButton}"
+                                    Background="White"
+                                    Foreground="{StaticResource PrimaryGradient}"
+                                    Click="AppelerButton_Click"/>
+                            <Button Content="❌ Fermer" 
+                                    Style="{StaticResource ModernButton}"
+                                    Background="{StaticResource DangerGradient}"
+                                    Foreground="White"
+                                    Click="FermerButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Grille avec trois colonnes -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Colonne 1: Informations personnelles -->
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
+                                <TextBlock Text="📋" FontSize="20" Margin="0 0 10 0"/>
+                                <TextBlock Text="Informations Personnelles" Style="{StaticResource TitleStyle}"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Nom complet:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding NomCompletEtudiant}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Date de naissance:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding EtudiantActuel.DateNaissance}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Âge:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding AgeEtudiant}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Téléphone:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding EtudiantActuel.Telephone}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Lycée:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding EtudiantActuel.Lycee}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Adresse:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding EtudiantActuel.Adresse}" 
+                                       Style="{StaticResource ValueStyle}"
+                                       TextWrapping="Wrap"/>
+
+                            <TextBlock Text="Date d'inscription:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding DateInscriptionFormatee}" Style="{StaticResource ValueStyle}"/>
+
+                            <TextBlock Text="Notes:" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="{Binding EtudiantActuel.Notes}" 
+                                       Style="{StaticResource ValueStyle}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Colonne 2: Cours suivis -->
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
+                                <TextBlock Text="📚" FontSize="20" Margin="0 0 10 0"/>
+                                <TextBlock Text="Cours Suivis" Style="{StaticResource TitleStyle}"/>
+                            </StackPanel>
+
+                            <!-- Statistiques des cours -->
+                            <Border Background="#f7fafc" CornerRadius="8" Padding="15" Margin="0 0 0 15">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Nombre de cours" Style="{StaticResource LabelStyle}"/>
+                                        <TextBlock Text="{Binding NombreCoursSuivis}" 
+                                                   FontSize="24" FontWeight="Bold" 
+                                                   Foreground="{StaticResource PrimaryGradient}"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Coût mensuel total" Style="{StaticResource LabelStyle}"/>
+                                        <TextBlock FontSize="18" FontWeight="Bold" 
+                                                   Foreground="{StaticResource SuccessGradient}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0:F0} DH">
+                                                    <Binding Path="MontantMensuelTotal"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Liste des cours -->
+                            <ItemsControl ItemsSource="{Binding InscriptionsActives}" Margin="0 15 0 0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#f7fafc" 
+                                                CornerRadius="6" 
+                                                Padding="12" 
+                                                Margin="0 0 0 8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="{Binding Groupe.Matiere.NomMatiere}" 
+                                                               FontWeight="SemiBold" 
+                                                               FontSize="13"/>
+                                                    <TextBlock Text="{Binding Groupe.NomGroupe}" 
+                                                               FontSize="11" 
+                                                               Foreground="#718096"/>
+                                                </StackPanel>
+                                                
+                                                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                                    <TextBlock FontWeight="SemiBold" 
+                                                               FontSize="13"
+                                                               Foreground="{StaticResource SuccessGradient}">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="{}{0:F0} DH">
+                                                                <Binding Path="PrixConvenuMensuel"/>
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Colonne 3: État des paiements -->
+                    <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                                <TextBlock Text="💰" FontSize="20" Margin="0 0 10 0"/>
+                                <TextBlock Text="État des Paiements" Style="{StaticResource TitleStyle}"/>
+                            </StackPanel>
+
+                            <!-- Sélecteur d'année -->
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
+                                <TextBlock Text="Année:" Style="{StaticResource LabelStyle}" VerticalAlignment="Center" Margin="0"/>
+                                <ComboBox ItemsSource="{Binding AnneesDisponibles}"
+                                          SelectedItem="{Binding AnneeSelectionnee}"
+                                          Margin="10 0 0 0"
+                                          Padding="8"
+                                          MinWidth="80"/>
+                            </StackPanel>
+
+                            <!-- Statistiques des paiements -->
+                            <Grid Margin="0 15 0 15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="✅" FontSize="16" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MoisPayesCompletement}" 
+                                               FontSize="18" FontWeight="Bold" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource SuccessGradient}"/>
+                                    <TextBlock Text="Payés" 
+                                               FontSize="10" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="#718096"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="⚠️" FontSize="16" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MoisPartiels}" 
+                                               FontSize="18" FontWeight="Bold" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource WarningGradient}"/>
+                                    <TextBlock Text="Partiels" 
+                                               FontSize="10" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="#718096"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="❌" FontSize="16" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MoisImpayes}" 
+                                               FontSize="18" FontWeight="Bold" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource DangerGradient}"/>
+                                    <TextBlock Text="Impayés" 
+                                               FontSize="10" 
+                                               HorizontalAlignment="Center"
+                                               Foreground="#718096"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Calendrier des paiements -->
+                            <TextBlock Text="Calendrier mensuel:" Style="{StaticResource LabelStyle}" Margin="0 10 0 5"/>
+                            <ItemsControl ItemsSource="{Binding EtatPaiements}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="2" 
+                                                CornerRadius="6" 
+                                                Padding="8"
+                                                ToolTip="{Binding Tooltip}">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding CouleurFond}"/>
+                                            </Border.Background>
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Icone}" 
+                                                           FontSize="16" 
+                                                           HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding NomMois}" 
+                                                           FontSize="10" 
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="White"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Barre de statut -->
+                <Border Background="{StaticResource PrimaryGradient}" 
+                        CornerRadius="8" 
+                        Padding="15 10" 
+                        Margin="10 10 10 0">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                        <TextBlock Text="{Binding StatusMessage}" 
+                                   FontWeight="Medium" 
+                                   FontSize="13" 
+                                   Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

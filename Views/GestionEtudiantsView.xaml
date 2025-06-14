@@ -300,112 +300,118 @@
             <Border Grid.Row="3" Background="White" 
                     CornerRadius="12" Margin="0 0 0 20" Padding="20"
                     Visibility="Collapsed"
-                    x:Name="FormPanel">
+                    x:Name="FormPanel"
+                    MaxHeight="300">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" ShadowDepth="4" Color="#20000000" Opacity="0.3"/>
                 </Border.Effect>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Titre du formulaire -->
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
-                        <Border Background="{StaticResource PrimaryGradient}" 
-                                Width="30" Height="30" 
-                                CornerRadius="15" 
-                                Margin="0 0 12 0">
-                            <TextBlock Text="📝" FontSize="16" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
-                        </Border>
-                        <StackPanel>
-                            <TextBlock Text="Informations de l'Étudiant" 
-                                       FontSize="16" FontWeight="Bold" 
-                                       Foreground="#2d3748"/>
-                            <TextBlock Text="Remplissez tous les champs nécessaires" 
-                                       FontSize="10" 
-                                       Foreground="#718096"/>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!-- Champs du formulaire -->
-                    <Grid Grid.Row="1" Margin="0 8 0 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                
+                <!-- ScrollViewer ajouté ici -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Disabled">
+                    <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Nom et Prénom -->
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
-                            <Label Content="Nom:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding NomInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="8" MinHeight="35"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
-                            <Label Content="Prénom:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding PrenomInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
-                        </StackPanel>
-
-                        <!-- Date Naissance et Téléphone -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
-                            <Label Content="Date Naissance:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding DateNaissanceInput, UpdateSourceTrigger=PropertyChanged}" 
-                                     ToolTip="Format YYYY-MM-DD" Margin="2" Padding="6" Height="35"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="6 0 0 0">
-                            <Label Content="Téléphone:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding TelephoneInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
+                        <!-- Titre du formulaire -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+                            <Border Background="{StaticResource PrimaryGradient}" 
+                                    Width="30" Height="30" 
+                                    CornerRadius="15" 
+                                    Margin="0 0 12 0">
+                                <TextBlock Text="📝" FontSize="16" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel>
+                                <TextBlock Text="Informations de l'Étudiant" 
+                                           FontSize="16" FontWeight="Bold" 
+                                           Foreground="#2d3748"/>
+                                <TextBlock Text="Remplissez tous les champs nécessaires" 
+                                           FontSize="10" 
+                                           Foreground="#718096"/>
+                            </StackPanel>
                         </StackPanel>
 
-                        <!-- Lycée -->
-                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                            <Label Content="Lycée:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding LyceeInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
-                        </StackPanel>
+                        <!-- Champs du formulaire -->
+                        <Grid Grid.Row="1" Margin="0 8 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <!-- Adresse -->
-                        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                            <Label Content="Adresse:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding AdresseInput, UpdateSourceTrigger=PropertyChanged}" 
-                                     TextWrapping="Wrap" AcceptsReturn="True" Height="40" Margin="2" Padding="6"/>
-                        </StackPanel>
+                            <!-- Nom et Prénom -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0 0 6 0">
+                                <Label Content="Nom:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding NomInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="8" MinHeight="35"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="6 0 0 0">
+                                <Label Content="Prénom:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding PrenomInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
+                            </StackPanel>
 
-                        <!-- Notes -->
-                        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                            <Label Content="Notes:" Margin="2" FontSize="11"/>
-                            <TextBox Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
-                                     TextWrapping="Wrap" AcceptsReturn="True" Height="40" Margin="2" Padding="6"/>
-                        </StackPanel>
+                            <!-- Date Naissance et Téléphone -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 6 0">
+                                <Label Content="Date Naissance:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding DateNaissanceInput, UpdateSourceTrigger=PropertyChanged}" 
+                                         ToolTip="Format YYYY-MM-DD" Margin="2" Padding="6" Height="35"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="6 0 0 0">
+                                <Label Content="Téléphone:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding TelephoneInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
+                            </StackPanel>
 
-                        <!-- Boutons du formulaire - À DROITE -->
-                        <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" 
-                                    Orientation="Vertical" 
-                                    VerticalAlignment="Center"
-                                    Margin="15 0 0 0">
-                            <Button Content="💾 Enregistrer" 
-                                    Style="{StaticResource PrimaryButton}"
-                                    Click="SaveButton_Click"
-                                    Margin="0 0 0 8"
-                                    Width="110"/>
-                            <Button Content="❌ Annuler" 
-                                    Style="{StaticResource PrimaryButton}"
-                                    Background="{StaticResource DangerGradient}"
-                                    Click="CancelButton_Click"
-                                    Width="110"/>
-                        </StackPanel>
+                            <!-- Lycée -->
+                            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                                <Label Content="Lycée:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding LyceeInput, UpdateSourceTrigger=PropertyChanged}" Margin="2" Padding="6" Height="35"/>
+                            </StackPanel>
+
+                            <!-- Adresse -->
+                            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                                <Label Content="Adresse:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding AdresseInput, UpdateSourceTrigger=PropertyChanged}" 
+                                         TextWrapping="Wrap" AcceptsReturn="True" Height="40" Margin="2" Padding="6"/>
+                            </StackPanel>
+
+                            <!-- Notes -->
+                            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+                                <Label Content="Notes:" Margin="2" FontSize="11"/>
+                                <TextBox Text="{Binding NotesInput, UpdateSourceTrigger=PropertyChanged}" 
+                                         TextWrapping="Wrap" AcceptsReturn="True" Height="40" Margin="2" Padding="6"/>
+                            </StackPanel>
+
+                            <!-- Boutons du formulaire - À DROITE -->
+                            <StackPanel Grid.Row="0" Grid.RowSpan="5" Grid.Column="2" 
+                                        Orientation="Vertical" 
+                                        VerticalAlignment="Center"
+                                        Margin="15 0 0 0">
+                                <Button Content="💾 Enregistrer" 
+                                        Style="{StaticResource PrimaryButton}"
+                                        Click="SaveButton_Click"
+                                        Margin="0 0 0 8"
+                                        Width="110"/>
+                                <Button Content="❌ Annuler" 
+                                        Style="{StaticResource PrimaryButton}"
+                                        Background="{StaticResource DangerGradient}"
+                                        Click="CancelButton_Click"
+                                        Width="110"/>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
-                </Grid>
+                </ScrollViewer>
             </Border>
 
             <!-- Barre de statut moderne -->

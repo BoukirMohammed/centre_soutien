@@ -23,6 +23,11 @@
             <GradientStop Color="#e53e3e" Offset="1"/>
         </LinearGradientBrush>
 
+        <LinearGradientBrush x:Key="SuccessGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#48bb78" Offset="0"/>
+            <GradientStop Color="#38a169" Offset="1"/>
+        </LinearGradientBrush>
+
         <!-- Style pour les boutons du menu -->
         <Style x:Key="MenuButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="8,4"/>
@@ -57,6 +62,56 @@
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#30FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style spécial pour le bouton Paiements -->
+        <Style x:Key="PaiementsButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="8,4"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="Background" Value="{StaticResource SuccessGradient}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="8">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#40000000" Opacity="0.4"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#68d391" Offset="0"/>
+                                            <GradientStop Color="#48bb78" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#38a169" Offset="0"/>
+                                            <GradientStop Color="#2f855a" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -172,6 +227,12 @@
                         <Button Content="📝 Inscriptions" Command="{Binding ShowInscriptionsViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
                         <Button Content="📅 Planification Séances" Command="{Binding ShowPlanningViewCommand}" Style="{StaticResource MenuButtonStyle}"/>
                         
+                        <!-- BOUTON PAIEMENTS - Mis en évidence -->
+                        <Button Content="💰 Gestion des Paiements" 
+                                Command="{Binding ShowPaiementsViewCommand}" 
+                                Style="{StaticResource PaiementsButtonStyle}"
+                                ToolTip="Enregistrer et suivre les paiements des étudiants"/>
+
                         <!-- Séparateur pour l'Admin -->
                         <Border Height="1" Background="#60FFFFFF" Margin="15,20,15,10"
                                 Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>

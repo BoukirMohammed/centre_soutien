@@ -43,6 +43,10 @@
         <DataTemplate DataType="{x:Type viewModels:GestionUtilisateursViewModel}">
             <views:GestionUtilisateursView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PaiementViewModel}">
+            <views:GestionPaiementsView/>
+        </DataTemplate>
+        
 
     </Application.Resources>
 </Application>
