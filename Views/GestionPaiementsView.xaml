@@ -534,143 +534,151 @@
                     </Grid>
                 </Border>
 
-                <!-- Panel droit - Nouveau paiement -->
-                <Border Grid.Column="4" Background="White" CornerRadius="12" Padding="20">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
-                    </Border.Effect>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+               <!-- Panel droit - Nouveau paiement avec ScrollViewer -->
+<Border Grid.Column="4" Background="White" CornerRadius="12" Padding="20">
+    <Border.Effect>
+        <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+    </Border.Effect>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                        <!-- Header nouveau paiement -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 20">
-                            <Border Background="{StaticResource SuccessGradient}" 
-                                    Width="30" Height="30" 
-                                    CornerRadius="15" 
-                                    Margin="0 0 10 0">
-                                <TextBlock Text="💳" FontSize="14" 
-                                           HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Text="Nouveau Paiement" 
-                                       FontSize="18" FontWeight="Bold" 
-                                       Foreground="#2d3748" 
-                                       VerticalAlignment="Center"/>
+        <!-- Header nouveau paiement (fixe en haut) -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0 0 0 15">
+            <Border Background="{StaticResource SuccessGradient}" 
+                    Width="30" Height="30" 
+                    CornerRadius="15" 
+                    Margin="0 0 10 0">
+                <TextBlock Text="💳" FontSize="14" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock Text="Nouveau Paiement" 
+                       FontSize="18" FontWeight="Bold" 
+                       Foreground="#2d3748" 
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Contenu scrollable -->
+        <ScrollViewer Grid.Row="1" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="0 10 0 0"
+                      Padding="0 0 10 0">
+            <StackPanel>
+                <!-- Formulaire paiement -->
+                <StackPanel Margin="0 0 0 15">
+                    <!-- Date de paiement -->
+                    <Label Content="Date de paiement"/>
+                    <DatePicker SelectedDate="{Binding DatePaiement, Mode=TwoWay}"/>
+
+                    <!-- Montant total -->
+                    <Label Content="Montant total"/>
+                    <Border BorderBrush="{StaticResource PrimaryGradient}" BorderThickness="2" CornerRadius="6" Margin="5">
+                        <TextBox Text="{Binding MontantTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2}"
+                                 FontSize="16" FontWeight="Bold" 
+                                 Background="#f8fafc" BorderThickness="0"
+                                 PreviewTextInput="MontantTextBox_PreviewTextInput"
+                                 KeyDown="MontantTextBox_KeyDown"/>
+                    </Border>
+                    <TextBlock Text="{Binding MontantTotalFormate}" 
+                               FontSize="12" Foreground="#38a169" 
+                               FontWeight="Bold" Margin="10 0 0 5"/>
+
+                    <!-- Notes -->
+                    <Label Content="Notes (optionnel)"/>
+                    <TextBox Text="{Binding NotesPaiement, Mode=TwoWay}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="60" MaxHeight="80"
+                             VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Récapitulatif -->
+                    <Border Background="#f8fafc" CornerRadius="8" Padding="15" Margin="0 15 0 0"
+                            Visibility="{Binding SelectedEtudiant, Converter={StaticResource StringToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="📋 Récapitulatif" FontSize="14" FontWeight="Bold" 
+                                       Foreground="#4a5568" Margin="0 0 0 10"/>
+                            
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Échéances sélectionnées:" 
+                                           FontSize="11" Foreground="#718096"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" 
+                                           FontSize="11" FontWeight="Bold">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}">
+                                            <Binding Path="EcheancesEtudiant" Converter="{StaticResource CountSelectedEcheancesConverter}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Montant calculé:" 
+                                           FontSize="11" Foreground="#718096"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" 
+                                           FontSize="11" FontWeight="Bold" Foreground="#4299e1">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0:C}">
+                                            <Binding Path="EcheancesEtudiant" Converter="{StaticResource SumSelectedEcheancesConverter}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <Rectangle Grid.Row="2" Grid.ColumnSpan="2" Height="1" 
+                                           Fill="#e2e8f0" Margin="0 5"/>
+                            </Grid>
                         </StackPanel>
+                    </Border>
+                </StackPanel>
 
-                        <!-- Formulaire paiement -->
-                        <StackPanel Grid.Row="1" Margin="0 10 0 0">
-                            <!-- Date de paiement -->
-                            <Label Content="Date de paiement"/>
-                            <DatePicker SelectedDate="{Binding DatePaiement, Mode=TwoWay}"/>
+                <!-- Boutons d'action -->
+                <StackPanel Margin="0 20 0 10">
+                    <!-- Bouton principal -->
+                    <Button Content="💾 Enregistrer le Paiement" 
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding EnregistrerPaiementCommand}"
+                            FontSize="14" Padding="15 12"/>
 
-                            <!-- Montant total -->
-                            <Label Content="Montant total"/>
-                            <Border BorderBrush="{StaticResource PrimaryGradient}" BorderThickness="2" CornerRadius="6" Margin="5">
-                                <TextBox Text="{Binding MontantTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2}"
-                                         FontSize="16" FontWeight="Bold" 
-                                         Background="#f8fafc" BorderThickness="0"
-                                         PreviewTextInput="MontantTextBox_PreviewTextInput"
-                                         KeyDown="MontantTextBox_KeyDown"/>
-                            </Border>
-                            <TextBlock Text="{Binding MontantTotalFormate}" 
-                                       FontSize="12" Foreground="#38a169" 
-                                       FontWeight="Bold" Margin="10 0 0 5"/>
+                    <!-- Boutons secondaires -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
+                        <Button Content="🔄 Recalculer" 
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding CalculerMontantAutoCommand}"
+                                Margin="0 0 5 0"/>
+                        
+                        <Button Content="🗑️ Effacer" 
+                                Style="{StaticResource SecondaryButton}"
+                                Click="ResetFormulaire_Click"
+                                Margin="5 0 0 0"/>
+                    </StackPanel>
 
-                            <!-- Notes -->
-                            <Label Content="Notes (optionnel)"/>
-                            <TextBox Text="{Binding NotesPaiement, Mode=TwoWay}"
-                                     AcceptsReturn="True"
-                                     TextWrapping="Wrap"
-                                     MinHeight="60" MaxHeight="100"
-                                     VerticalScrollBarVisibility="Auto"/>
-
-                            <!-- Récapitulatif -->
-                            <Border Background="#f8fafc" CornerRadius="8" Padding="15" Margin="0 15 0 0"
-                                    Visibility="{Binding SelectedEtudiant, Converter={StaticResource StringToVisibilityConverter}}">
-                                <StackPanel>
-                                    <TextBlock Text="📋 Récapitulatif" FontSize="14" FontWeight="Bold" 
-                                               Foreground="#4a5568" Margin="0 0 0 10"/>
-                                    
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Échéances sélectionnées:" 
-                                                   FontSize="11" Foreground="#718096"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" 
-                                                   FontSize="11" FontWeight="Bold">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0}">
-                                                    <Binding Path="EcheancesEtudiant" Converter="{StaticResource CountSelectedEcheancesConverter}"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Montant calculé:" 
-                                                   FontSize="11" Foreground="#718096"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="1" 
-                                                   FontSize="11" FontWeight="Bold" Foreground="#4299e1">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0:C}">
-                                                    <Binding Path="EcheancesEtudiant" Converter="{StaticResource SumSelectedEcheancesConverter}"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-
-                                        <Rectangle Grid.Row="2" Grid.ColumnSpan="2" Height="1" 
-                                                   Fill="#e2e8f0" Margin="0 5"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
+                    <!-- Zone de validation -->
+                    <Border Background="#fff5f5" BorderBrush="#fed7d7" BorderThickness="1" 
+                            CornerRadius="6" Padding="10" Margin="0 15 0 0"
+                            Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ℹ️" FontSize="14" Margin="0 0 8 0"/>
+                            <TextBlock Text="{Binding StatusMessage}" 
+                                       FontSize="12" Foreground="#c53030" 
+                                       TextWrapping="Wrap"/>
                         </StackPanel>
-
-                        <!-- Boutons d'action -->
-                        <StackPanel Grid.Row="2" Margin="0 20 0 0">
-                            <!-- Bouton principal -->
-                            <Button Content="💾 Enregistrer le Paiement" 
-                                    Style="{StaticResource PrimaryButton}"
-                                    Command="{Binding EnregistrerPaiementCommand}"
-                                    FontSize="14" Padding="15 12"/>
-
-                            <!-- Boutons secondaires -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
-                                <Button Content="🔄 Recalculer" 
-                                        Style="{StaticResource SecondaryButton}"
-                                        Command="{Binding CalculerMontantAutoCommand}"
-                                        Margin="0 0 5 0"/>
-                                
-                                <Button Content="🗑️ Effacer" 
-                                        Style="{StaticResource SecondaryButton}"
-                                        Click="ResetFormulaire_Click"
-                                        Margin="5 0 0 0"/>
-                            </StackPanel>
-
-                            <!-- Zone de validation -->
-                            <Border Background="#fff5f5" BorderBrush="#fed7d7" BorderThickness="1" 
-                                    CornerRadius="6" Padding="10" Margin="0 15 0 0"
-                                    Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="ℹ️" FontSize="14" Margin="0 0 8 0"/>
-                                    <TextBlock Text="{Binding StatusMessage}" 
-                                               FontSize="12" Foreground="#c53030" 
-                                               TextWrapping="Wrap"/>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Border>
             </Grid>
 
             <!-- Barre de statut -->

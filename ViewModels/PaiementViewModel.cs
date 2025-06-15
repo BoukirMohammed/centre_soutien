@@ -201,7 +201,7 @@ namespace centre_soutien.ViewModels
                    EcheancesEtudiant?.Any(e => e.EstSelectionne && e.MontantAPayer > 0) == true;
         }
 
-        private async Task EnregistrerPaiementAsync()
+   private async Task EnregistrerPaiementAsync()
         {
             if (!CanEnregistrerPaiement(null) || SelectedEtudiant == null) return;
 
@@ -228,7 +228,7 @@ namespace centre_soutien.ViewModels
                     Notes = NotesPaiement
                 };
 
-                // Créer les détails du paiement
+                // Créer les détails du paiement et les ajouter directement au paiement
                 var details = EcheancesEtudiant
                     .Where(e => e.EstSelectionne && e.MontantAPayer > 0)
                     .Select(e => new DetailPaiement
@@ -238,8 +238,11 @@ namespace centre_soutien.ViewModels
                         MontantPayePourEcheance = e.MontantAPayer
                     }).ToList();
 
+                // Assigner les détails au paiement
+                paiement.DetailsPaiements = details;
+
                 // Enregistrer en base de données
-                await _paiementRepository.AddPaiementAsync(paiement, details);
+                await _paiementRepository.AddPaiementAsync(paiement);
 
                 StatusMessage = $"Paiement de {MontantTotal:C} enregistré avec succès pour {SelectedEtudiant.NomComplet}.";
 

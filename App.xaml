@@ -5,17 +5,12 @@
              xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
              xmlns:views="clr-namespace:centre_soutien.Views"
              xmlns:converters="clr-namespace:centre_soutien.Converters"
-             ShutdownMode="OnExplicitShutdown"
-             >
+             ShutdownMode="OnExplicitShutdown">
+    
     <Application.Resources>
         
-        <DataTemplate DataType="{x:Type viewModels:SalleViewModel}">
-            <views:GestionSallesView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="{x:Type viewModels:ProfesseurViewModel}">
-            <views:GestionProfesseursView/>
-        </DataTemplate>
+        <!-- ===== CONVERTISSEURS ===== -->
+        <!-- Convertisseurs communs -->
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
         <converters:IsNullConverter x:Key="IsNullConverter"/>
@@ -23,30 +18,56 @@
         <converters:IsNotNullToVisibilityConverter x:Key="IsNotNullToVisibilityConverter"/>
         <converters:IsNullToVisibilityConverter x:Key="IsNullToVisibilityConverter"/>
         
+        <!-- Convertisseurs pour les paiements -->
+        <converters:BooleanToColorConverter x:Key="BooleanToColorConverter" />
+        <converters:BooleanToStatusConverter x:Key="BooleanToStatusConverter" />
+        <converters:PaiementStatusToColorConverter x:Key="PaiementStatusToColorConverter" />
+        <converters:CountSelectedEcheancesConverter x:Key="CountSelectedEcheancesConverter" />
+        <converters:SumSelectedEcheancesConverter x:Key="SumSelectedEcheancesConverter" />
+        <converters:SelectedEcheancesTextConverter x:Key="SelectedEcheancesTextConverter" />
+        <converters:MontantToMarocainCurrencyConverter x:Key="MontantToMarocainCurrencyConverter" />
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        <converters:CollectionToVisibilityConverter x:Key="CollectionToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 
 
+        <!-- ===== DATA TEMPLATES ===== -->
+        <!-- Templates pour les ViewModels -->
+        <DataTemplate DataType="{x:Type viewModels:SalleViewModel}">
+            <views:GestionSallesView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type viewModels:ProfesseurViewModel}">
+            <views:GestionProfesseursView/>
+        </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:MatiereViewModel}">
             <views:GestionMatieresView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:EtudiantViewModel}">
             <views:GestionEtudiantsView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:GroupeViewModel}">
             <views:GestionGroupesView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:InscriptionViewModel}">
             <views:GestionInscriptionsView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:PlanningViewModel}">
             <views:PlanningView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:GestionUtilisateursViewModel}">
             <views:GestionUtilisateursView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type viewModels:PaiementViewModel}">
             <views:GestionPaiementsView/>
         </DataTemplate>
-        
 
     </Application.Resources>
 </Application>

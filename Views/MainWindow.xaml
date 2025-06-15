@@ -229,7 +229,7 @@
                         
                         <!-- BOUTON PAIEMENTS - Mis en évidence -->
                         <Button Content="💰 Gestion des Paiements" 
-                                Command="{Binding ShowPaiementsViewCommand}" 
+                                Command="{Binding ShowGestionPaiementCommand}" 
                                 Style="{StaticResource PaiementsButtonStyle}"
                                 ToolTip="Enregistrer et suivre les paiements des étudiants"/>
 

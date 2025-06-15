@@ -20,6 +20,8 @@ namespace centre_soutien.Views
             // Initialiser le ViewModel avec l'étudiant sélectionné
             ViewModel = new EtudiantDetailsViewModel(etudiant);
             DataContext = ViewModel;
+            Debug.WriteLine($"EtudiantDetailleWindow - ViewModel.InscriptionsActives count: {ViewModel.InscriptionsActives?.Count ?? -1}");
+
         }
 
         /// <summary>
