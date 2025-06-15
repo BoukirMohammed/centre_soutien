@@ -1,4 +1,4 @@
-﻿// Dans ViewModels/EtudiantsInscritsViewModel.cs
+﻿// Dans ViewModels/EtudiantsInscritsViewModel.cs - VERSION MISE À JOUR
 using centre_soutien.Models;
 using centre_soutien.DataAccess;
 using System.Collections.ObjectModel;
@@ -13,7 +13,9 @@ namespace centre_soutien.ViewModels
     public class EtudiantsInscritsViewModel : INotifyPropertyChanged
     {
         private readonly InscriptionRepository _inscriptionRepository;
-        private readonly GroupeRepository _groupeRepository; // Optionnel: pour charger le nom du groupe
+        private readonly GroupeRepository _groupeRepository;
+        private readonly PaiementRepository _paiementRepository; // AJOUT
+        private readonly int _groupeId; // AJOUT
 
         private Groupe? _currentGroupe;
         public Groupe? CurrentGroupe
@@ -22,11 +24,12 @@ namespace centre_soutien.ViewModels
             private set { _currentGroupe = value; OnPropertyChanged(); }
         }
         
-        private ObservableCollection<Etudiant> _etudiantsInscrits;
-        public ObservableCollection<Etudiant> EtudiantsInscrits
+        // MODIFICATION : Remplacer par la nouvelle collection
+        private ObservableCollection<EtudiantAvecStatutPaiement> _etudiantsAvecStatut;
+        public ObservableCollection<EtudiantAvecStatutPaiement> EtudiantsAvecStatut
         {
-            get => _etudiantsInscrits;
-            set { _etudiantsInscrits = value; OnPropertyChanged(); }
+            get => _etudiantsAvecStatut;
+            set { _etudiantsAvecStatut = value; OnPropertyChanged(); }
         }
 
         private string _statusMessage = string.Empty;
@@ -36,44 +39,115 @@ namespace centre_soutien.ViewModels
             set { _statusMessage = value; OnPropertyChanged(); }
         }
 
-        // Constructeur prenant l'ID du groupe et les repositories nécessaires
+        // Propriétés pour les statistiques d'affichage
+        public int NombreEtudiantsPayes => EtudiantsAvecStatut?.Count(e => e.StatutPaiementGroupe == "Payé") ?? 0;
+        public int NombreEtudiantsEnRetard => EtudiantsAvecStatut?.Count(e => e.StatutPaiementGroupe == "En retard") ?? 0;
+        public int NombreEtudiantsPartiels => EtudiantsAvecStatut?.Count(e => e.StatutPaiementGroupe == "Partiel") ?? 0;
+
+        // Constructeur mis à jour
         public EtudiantsInscritsViewModel(int groupeId, 
                                           InscriptionRepository inscriptionRepo, 
-                                          GroupeRepository? groupeRepo = null) // groupeRepo est optionnel
+                                          GroupeRepository? groupeRepo = null)
         {
+            _groupeId = groupeId;
             _inscriptionRepository = inscriptionRepo;
-            _groupeRepository = groupeRepo; // Peut être null
+            _groupeRepository = groupeRepo;
+            _paiementRepository = new PaiementRepository(); // AJOUT
 
-            EtudiantsInscrits = new ObservableCollection<Etudiant>();
-            _ = LoadEtudiantsInscritsAsync(groupeId);
+            EtudiantsAvecStatut = new ObservableCollection<EtudiantAvecStatutPaiement>();
+            _ = LoadEtudiantsInscritsAvecStatutAsync();
         }
 
-        private async Task LoadEtudiantsInscritsAsync(int groupeId)
+        private async Task LoadEtudiantsInscritsAvecStatutAsync()
         {
-            StatusMessage = "Chargement des étudiants inscrits...";
+            StatusMessage = "Chargement des étudiants inscrits et de leur statut de paiement...";
             try
             {
-                if (_groupeRepository != null) // Optionnel: Charger les détails du groupe pour affichage
+                // Charger les détails du groupe
+                if (_groupeRepository != null)
                 {
-                    CurrentGroupe = await _groupeRepository.GetGroupeByIdAsync(groupeId);
+                    CurrentGroupe = await _groupeRepository.GetGroupeByIdAsync(_groupeId);
                 }
 
-                var inscriptions = await _inscriptionRepository.GetActiveInscriptionsForGroupeAsync(groupeId);
-                var etudiants = inscriptions.Select(i => i.Etudiant)
-                                            .Where(e => e != null) // S'assurer que l'étudiant n'est pas null
-                                            .OrderBy(e => e!.Nom)   // Utiliser ! si Etudiant est censé être toujours là
-                                            .ThenBy(e => e!.Prenom)
-                                            .ToList();
+                // Charger les inscriptions actives pour ce groupe
+                var inscriptions = await _inscriptionRepository.GetActiveInscriptionsForGroupeAsync(_groupeId);
                 
-                EtudiantsInscrits = new ObservableCollection<Etudiant>(etudiants!); // ! pour dire au compilo que etudiants ne sera pas null
+                var etudiantsAvecStatut = new List<EtudiantAvecStatutPaiement>();
+
+                // Pour chaque inscription, calculer le statut de paiement
+                foreach (var inscription in inscriptions)
+                {
+                    if (inscription.Etudiant == null) continue;
+
+                    var etudiantAvecStatut = new EtudiantAvecStatutPaiement
+                    {
+                        Etudiant = inscription.Etudiant,
+                        Inscription = inscription
+                    };
+
+                    // Calculer le statut de paiement pour le mois courant
+                    var statutPaiement = await CalculerStatutPaiementMoisCourant(inscription);
+                    etudiantAvecStatut.UpdateStatutPaiement(statutPaiement);
+
+                    etudiantsAvecStatut.Add(etudiantAvecStatut);
+                }
+
+                // Trier par nom puis prénom
+                var etudiantsTriés = etudiantsAvecStatut
+                    .OrderBy(e => e.Etudiant.Nom)
+                    .ThenBy(e => e.Etudiant.Prenom)
+                    .ToList();
+
+                EtudiantsAvecStatut = new ObservableCollection<EtudiantAvecStatutPaiement>(etudiantsTriés);
                 
-                string nomGroupe = CurrentGroupe?.NomDescriptifGroupe ?? $"Groupe ID {groupeId}";
-                StatusMessage = $"{EtudiantsInscrits.Count} étudiant(s) inscrit(s) au groupe '{nomGroupe}'.";
+                // Mettre à jour les statistiques
+                OnPropertyChanged(nameof(NombreEtudiantsPayes));
+                OnPropertyChanged(nameof(NombreEtudiantsEnRetard));
+                OnPropertyChanged(nameof(NombreEtudiantsPartiels));
+
+                string nomGroupe = CurrentGroupe?.NomDescriptifGroupe ?? $"Groupe ID {_groupeId}";
+                StatusMessage = $"{EtudiantsAvecStatut.Count} étudiant(s) inscrit(s) au groupe '{nomGroupe}'. " +
+                               $"Payés: {NombreEtudiantsPayes}, En retard: {NombreEtudiantsEnRetard}, Partiels: {NombreEtudiantsPartiels}";
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Erreur lors du chargement des étudiants inscrits : {ex.Message}";
             }
+        }
+
+        /// <summary>
+        /// Calcule le statut de paiement d'une inscription pour le mois courant
+        /// </summary>
+        private async Task<StatutPaiementMensuel?> CalculerStatutPaiementMoisCourant(Inscription inscription)
+        {
+            try
+            {
+                var anneeActuelle = DateTime.Now.Year;
+                var moisActuel = DateTime.Now.Month;
+                
+                // Utiliser la méthode existante pour obtenir le statut du mois courant
+                var statutsMensuelsPourInscription = await _paiementRepository.GetStatutPaiementParMoisEtMatiereAsync(
+                    inscription.IDEtudiant, 
+                    inscription.IDInscription, 
+                    anneeActuelle);
+
+                // Retourner seulement le statut du mois courant
+                return statutsMensuelsPourInscription.FirstOrDefault(s => s.Mois == moisActuel);
+            }
+            catch (Exception ex)
+            {
+                // En cas d'erreur, retourner null (sera géré comme "Non défini")
+                System.Diagnostics.Debug.WriteLine($"Erreur calcul statut paiement: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Méthode pour actualiser les données (peut être appelée depuis l'interface)
+        /// </summary>
+        public async Task RefreshDataAsync()
+        {
+            await LoadEtudiantsInscritsAvecStatutAsync();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -399,5 +399,176 @@ namespace centre_soutien.DataAccess
                 }
             }
         }
+
+// Ajouter ces méthodes à la fin de la classe PaiementRepository existante
+
+        /// <summary>
+        /// Calcule le montant total collecté pour un groupe sur une période donnée
+        /// </summary>
+        public async Task<double> GetMontantCollecteGroupePeriodeAsync(int groupeId, DateTime dateDebut,
+            DateTime dateFin)
+        {
+            using (var context = CreateContext())
+            {
+                // Obtenir les inscriptions du groupe
+                var inscriptionsGroupe = await context.Inscriptions
+                    .Where(i => i.IDGroupe == groupeId && i.EstActif)
+                    .Select(i => i.IDInscription)
+                    .ToListAsync();
+
+                if (!inscriptionsGroupe.Any()) return 0;
+
+                // Calculer le montant total collecté
+                var montantTotal = await context.DetailsPaiements
+                    .Where(dp => inscriptionsGroupe.Contains(dp.IDInscription) &&
+                                 context.Paiements.Any(p => p.IDPaiement == dp.IDPaiement &&
+                                                            DateTime.ParseExact(p.DatePaiement, "yyyy-MM-dd",
+                                                                CultureInfo.InvariantCulture) >= dateDebut &&
+                                                            DateTime.ParseExact(p.DatePaiement, "yyyy-MM-dd",
+                                                                CultureInfo.InvariantCulture) <= dateFin))
+                    .SumAsync(dp => dp.MontantPayePourEcheance);
+
+                return montantTotal;
+            }
+        }
+
+        /// <summary>
+        /// Calcule le montant attendu pour un groupe sur une période donnée
+        /// </summary>
+        public async Task<double> GetMontantAttenduGroupePeriodeAsync(int groupeId, DateTime dateDebut,
+            DateTime dateFin)
+        {
+            using (var context = CreateContext())
+            {
+                var inscriptionsGroupe = await context.Inscriptions
+                    .Where(i => i.IDGroupe == groupeId && i.EstActif)
+                    .ToListAsync();
+
+                double totalAttendu = 0;
+
+                foreach (var inscription in inscriptionsGroupe)
+                {
+                    var dateInscription = DateTime.ParseExact(inscription.DateInscription, "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture);
+
+                    // Calculer le nombre de mois dans la période pour cette inscription
+                    var debutPeriodePourInscription = dateInscription > dateDebut ? dateInscription : dateDebut;
+                    var finPeriodePourInscription = dateFin;
+
+                    if (debutPeriodePourInscription <= finPeriodePourInscription)
+                    {
+                        // Calculer le nombre de mois complets + le mois partiel en cours
+                        var nombreMois = Math.Max(1,
+                            ((finPeriodePourInscription.Year - debutPeriodePourInscription.Year) * 12) +
+                            finPeriodePourInscription.Month - debutPeriodePourInscription.Month + 1);
+
+                        totalAttendu += inscription.PrixConvenuMensuel * nombreMois;
+                    }
+                }
+
+                return totalAttendu;
+            }
+        }
+
+        /// <summary>
+        /// Obtient tous les paiements d'un groupe pour une période donnée
+        /// </summary>
+        public async Task<List<Paiement>> GetPaiementsGroupePeriodeAsync(int groupeId, DateTime dateDebut,
+            DateTime dateFin)
+        {
+            using (var context = CreateContext())
+            {
+                // Obtenir les IDs des inscriptions du groupe
+                var inscriptionsGroupe = await context.Inscriptions
+                    .Where(i => i.IDGroupe == groupeId && i.EstActif)
+                    .Select(i => i.IDInscription)
+                    .ToListAsync();
+
+                if (!inscriptionsGroupe.Any()) return new List<Paiement>();
+
+                // Obtenir les paiements qui concernent ce groupe dans la période
+                var paiements = await context.Paiements
+                    .Where(p =>
+                        DateTime.ParseExact(p.DatePaiement, "yyyy-MM-dd", CultureInfo.InvariantCulture) >= dateDebut &&
+                        DateTime.ParseExact(p.DatePaiement, "yyyy-MM-dd", CultureInfo.InvariantCulture) <= dateFin &&
+                        p.DetailsPaiements.Any(dp => inscriptionsGroupe.Contains(dp.IDInscription)))
+                    .Include(p => p.Etudiant)
+                    .Include(p => p.UtilisateurEnregistrement)
+                    .Include(p => p.DetailsPaiements)
+                    .ThenInclude(dp => dp.Inscription)
+                    .ThenInclude(i => i.Groupe)
+                    .ThenInclude(g => g.Matiere)
+                    .OrderByDescending(p => p.DatePaiement)
+                    .ToListAsync();
+
+                return paiements;
+            }
+        }
+
+        /// <summary>
+        /// Calcule les statistiques financières complètes pour un groupe sur une période
+        /// </summary>
+        public async Task<StatistiquesFinancieresGroupe> GetStatistiquesFinancieresGroupeAsync(int groupeId,
+            DateTime dateDebut, DateTime dateFin)
+        {
+            using (var context = CreateContext())
+            {
+                // Obtenir les informations du groupe
+                var groupe = await context.Groupes
+                    .Include(g => g.Matiere)
+                    .Include(g => g.Professeur)
+                    .FirstOrDefaultAsync(g => g.IDGroupe == groupeId);
+
+                if (groupe == null)
+                    throw new KeyNotFoundException($"Groupe avec ID {groupeId} non trouvé.");
+
+                // Obtenir les inscriptions actives du groupe
+                var inscriptions = await context.Inscriptions
+                    .Where(i => i.IDGroupe == groupeId && i.EstActif)
+                    .Include(i => i.Etudiant)
+                    .ToListAsync();
+
+                // Calculer le montant collecté
+                var montantCollecte = await GetMontantCollecteGroupePeriodeAsync(groupeId, dateDebut, dateFin);
+
+                // Calculer le montant attendu
+                var montantAttendu = await GetMontantAttenduGroupePeriodeAsync(groupeId, dateDebut, dateFin);
+
+                // Obtenir le pourcentage de rémunération du professeur
+                var associationProfMatiere = await context.ProfesseurMatieres
+                    .FirstOrDefaultAsync(pm => pm.IDProfesseur == groupe.IDProfesseur &&
+                                               pm.IDMatiere == groupe.IDMatiere);
+
+                var pourcentageRemuneration = associationProfMatiere?.PourcentageRemuneration ?? 0;
+
+                // Calculer la rémunération du professeur
+                var montantProfesseur = montantCollecte * (pourcentageRemuneration / 100.0);
+
+                // Calculer le montant en retard
+                var montantEnRetard = Math.Max(0, montantAttendu - montantCollecte);
+
+                // Calculer le profit du centre
+                var profitCentre = montantCollecte - montantProfesseur;
+
+                // Obtenir les paiements de la période
+                var paiements = await GetPaiementsGroupePeriodeAsync(groupeId, dateDebut, dateFin);
+
+                return new StatistiquesFinancieresGroupe
+                {
+                    Groupe = groupe,
+                    DateDebut = dateDebut,
+                    DateFin = dateFin,
+                    NombreEtudiantsActifs = inscriptions.Count,
+                    MontantTotalCollecte = montantCollecte,
+                    MontantAttendu = montantAttendu,
+                    MontantProfesseur = montantProfesseur,
+                    MontantEnRetard = montantEnRetard,
+                    ProfitCentre = profitCentre,
+                    PourcentageRemunerationProfesseur = pourcentageRemuneration,
+                    PaiementsPeriode = paiements,
+                    TauxCollecte = montantAttendu > 0 ? (montantCollecte / montantAttendu) * 100 : 0
+                };
+            }
+        }
     }
 }

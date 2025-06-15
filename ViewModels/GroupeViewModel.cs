@@ -306,15 +306,25 @@ namespace centre_soutien.ViewModels
         }
         
         private bool CanShowEtudiantsInscrits(object? parameter) => SelectedGroupe != null;
+// MODIFICATION À APPORTER dans GroupeViewModel.cs
+// Remplacer la méthode OpenEtudiantsInscritsDialog() existante par celle-ci :
+
         private void OpenEtudiantsInscritsDialog()
         {
             if (SelectedGroupe == null) return;
-            var etudiantsInscritsVM = new EtudiantsInscritsViewModel(SelectedGroupe.IDGroupe, _inscriptionRepository, _groupeRepository);
+    
+            // Créer le ViewModel avec le PaiementRepository pour le calcul des statuts
+            var etudiantsInscritsVM = new EtudiantsInscritsViewModel(
+                SelectedGroupe.IDGroupe, 
+                _inscriptionRepository, 
+                _groupeRepository);
+    
             var etudiantsInscritsWindow = new EtudiantsInscritsWindow
             {
                 DataContext = etudiantsInscritsVM,
                 Owner = Application.Current.MainWindow
             };
+    
             etudiantsInscritsWindow.ShowDialog();
         }
 

@@ -1,51 +1,449 @@
 ﻿<Window x:Class="centre_soutien.Views.EtudiantsInscritsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:centre_soutien.Views"
-        xmlns:viewModels="clr-namespace:centre_soutien.ViewModels" 
-        mc:Ignorable="d"
-        Title="Étudiants Inscrits" Height="450" Width="600"
-        WindowStartupLocation="CenterOwner" MinHeight="300" MinWidth="400">
-    <!-- -->
-    <!-- <d:Window.DataContext> -->
-    <!--     <viewModels:EtudiantsInscritsViewModel GroupeId="0" InscriptionRepo="{x:Null}" GroupeRepo="{x:Null}"/> -->
-    <!-- </d:Window.DataContext> -->
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        mc:Ignorable="d" 
+        Title="Étudiants Inscrits" 
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        FontFamily="Segoe UI">
 
-    <Grid Margin="10">
+    <Window.Resources>
+        <!-- Style pour les en-têtes avec gradient -->
+        <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#667eea" Offset="0"/>
+            <GradientStop Color="#764ba2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Style pour les cartes avec ombre -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#20000000" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style pour les statistiques -->
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#10000000" Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#f8f9fa">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Titre du groupe -->
-            <RowDefinition Height="*"/>    <!-- DataGrid des étudiants -->
-            <RowDefinition Height="Auto"/> <!-- StatusBar -->
-            <RowDefinition Height="Auto"/> <!-- Bouton Fermer -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/> <!-- NOUVEAU : Ligne pour les boutons d'actions -->
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Margin="0,0,0,10" FontSize="18" FontWeight="SemiBold">
-            <Run Text="Étudiants inscrits au groupe :"/>
-            <Run Text="{Binding CurrentGroupe.NomDescriptifGroupe, FallbackValue='Chargement...'}" FontWeight="Bold"/>
-            <Run Text="{Binding CurrentGroupe.Matiere.NomMatiere, StringFormat=' ({}Matière: {0})', FallbackValue=''}"/>
-        </TextBlock>
+        <!-- En-tête -->
+        <Border Grid.Row="0" Background="{StaticResource HeaderGradient}" 
+                CornerRadius="0" Padding="20">
+            <StackPanel Orientation="Horizontal">
+                <Border Background="White" 
+                        Width="40" Height="40" 
+                        CornerRadius="20" 
+                        Margin="0 0 15 0">
+                    <TextBlock Text="👥" FontSize="20" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel>
+                    <TextBlock Text="Étudiants Inscrits" 
+                               FontSize="22" FontWeight="Bold" 
+                               Foreground="White"/>
+                    <TextBlock Text="{Binding CurrentGroupe.NomDescriptifGroupe, FallbackValue='Groupe non spécifié'}" 
+                               FontSize="14" 
+                               Foreground="#E0E0E0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding EtudiantsInscrits}"
-                  AutoGenerateColumns="False" IsReadOnly="True"
-                  CanUserAddRows="False" CanUserDeleteRows="False"
-                  VerticalScrollBarVisibility="Auto">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding IDEtudiant}" Width="Auto"/>
-                <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*"/>
-                <DataGridTextColumn Header="Prénom" Binding="{Binding Prenom}" Width="*"/>
-                <DataGridTextColumn Header="Téléphone" Binding="{Binding Telephone}" Width="Auto"/>
-                <DataGridTextColumn Header="Lycée" Binding="{Binding Lycee}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <!-- Statistiques -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" Margin="0 15 0 0">
+            
+            <!-- Total étudiants -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="👥" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding EtudiantsAvecStatut.Count}" 
+                               FontSize="24" FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#4299e1"/>
+                    <TextBlock Text="Total" FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#666"/>
+                </StackPanel>
+            </Border>
 
-        <StatusBar Grid.Row="2" Margin="0,5,0,0">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}"/>
-            </StatusBarItem>
-        </StatusBar>
-        
-        <Button Grid.Row="3" Content="Fermer" IsCancel="True" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="10,5"/>
+            <!-- Étudiants payés -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="✅" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding NombreEtudiantsPayes}" 
+                               FontSize="24" FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#48bb78"/>
+                    <TextBlock Text="Payés" FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#666"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Étudiants en retard -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="❌" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding NombreEtudiantsEnRetard}" 
+                               FontSize="24" FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#f56565"/>
+                    <TextBlock Text="En retard" FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#666"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Étudiants partiels -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="⚠️" FontSize="20" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding NombreEtudiantsPartiels}" 
+                               FontSize="24" FontWeight="Bold" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#ed8936"/>
+                    <TextBlock Text="Partiels" FontSize="12" 
+                               HorizontalAlignment="Center" 
+                               Foreground="#666"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- NOUVEAU : Boutons d'actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" Margin="0 15 0 10">
+            
+            <!-- Bouton Statistiques Financières -->
+            <Button Content="📊 Statistiques Financières" 
+                    Background="#4299e1" 
+                    Foreground="White" 
+                    BorderThickness="0" 
+                    Padding="15 8" 
+                    Margin="0 0 10 0"
+                    FontWeight="SemiBold"
+                    Cursor="Hand"
+                    Click="StatistiquesButton_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="2" Color="#20000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#3182ce"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            
+            <!-- Bouton Envoyer Rappels (désactivé pour l'instant) -->
+            <Button Content="📧 Envoyer Rappels" 
+                    Background="#ed8936" 
+                    Foreground="White" 
+                    BorderThickness="0" 
+                    Padding="15 8" 
+                    Margin="0 0 10 0"
+                    FontWeight="SemiBold"
+                    Cursor="Hand"
+                    IsEnabled="False"
+                    ToolTip="Fonctionnalité à venir">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                Opacity="{TemplateBinding Opacity}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="2" Color="#20000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <!-- Bouton Exporter Liste -->
+            <Button Content="📤 Exporter Liste" 
+                    Background="#48bb78" 
+                    Foreground="White" 
+                    BorderThickness="0" 
+                    Padding="15 8" 
+                    FontWeight="SemiBold"
+                    Cursor="Hand"
+                    IsEnabled="False"
+                    ToolTip="Fonctionnalité à venir">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                Opacity="{TemplateBinding Opacity}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="2" Color="#20000000" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+
+        <!-- Liste des étudiants -->
+        <Border Grid.Row="3" Style="{StaticResource CardStyle}">
+            <DataGrid ItemsSource="{Binding EtudiantsAvecStatut}"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True"
+                      CanUserAddRows="False" 
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="None"
+                      HeadersVisibility="Column"
+                      RowHeight="50"
+                      AlternatingRowBackground="#fafbfc"
+                      Background="White">
+                
+                <DataGrid.Columns>
+                    <!-- Statut de paiement avec icône et couleur -->
+                    <DataGridTemplateColumn Header="Statut" Width="100">
+                        <DataGridTemplateColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource HeaderGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTemplateColumn.HeaderStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding CouleurFond}" 
+                                        CornerRadius="4" 
+                                        Padding="8 4"
+                                        ToolTip="{Binding TooltipStatut}"
+                                        HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding IconeStatut}" 
+                                                   FontSize="14" 
+                                                   Margin="0 0 4 0"/>
+                                        <TextBlock Text="{Binding StatutPaiementGroupe}" 
+                                                   FontSize="11" 
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{Binding CouleurTexte}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <!-- Nom complet -->
+                    <DataGridTextColumn Header="Nom Complet" 
+                                        Binding="{Binding NomComplet}" 
+                                        Width="200">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource HeaderGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="Padding" Value="12 0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Background" Value="{Binding CouleurFond}"/>
+                                <Setter Property="Foreground" Value="{Binding CouleurTexte}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- Téléphone -->
+                    <DataGridTextColumn Header="Téléphone" 
+                                        Binding="{Binding Telephone}" 
+                                        Width="140">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource HeaderGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Padding" Value="12 0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Background" Value="{Binding CouleurFond}"/>
+                                <Setter Property="Foreground" Value="{Binding CouleurTexte}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    
+                    <!-- Lycée -->
+                    <DataGridTextColumn Header="Lycée" 
+                                        Binding="{Binding Lycee}" 
+                                        Width="*">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource HeaderGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Padding" Value="12 0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Background" Value="{Binding CouleurFond}"/>
+                                <Setter Property="Foreground" Value="{Binding CouleurTexte}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Prix mensuel -->
+                    <DataGridTextColumn Header="Prix Mensuel" 
+                                        Binding="{Binding Inscription.PrixConvenuMensuel, StringFormat='{}{0:F2} DH'}" 
+                                        Width="120">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource HeaderGradient}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Padding" Value="12 0"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Background" Value="{Binding CouleurFond}"/>
+                                <Setter Property="Foreground" Value="{Binding CouleurTexte}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Barre de statut -->
+        <Border Grid.Row="4" Background="{StaticResource HeaderGradient}" 
+                CornerRadius="0" Padding="15 10">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
+                <TextBlock Text="{Binding StatusMessage}" 
+                           FontWeight="Medium" FontSize="13" 
+                           Foreground="White"/>
+                
+                <!-- Bouton pour actualiser -->
+                <Button Content="🔄 Actualiser" 
+                        Background="Transparent" 
+                        Foreground="White" 
+                        BorderThickness="1" 
+                        BorderBrush="White" 
+                        Padding="10 5" 
+                        Margin="20 0 0 0"
+                        Cursor="Hand"
+                        Click="RefreshButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                
+                <!-- Bouton Fermer -->
+                <Button Content="✖️ Fermer" 
+                        Background="#f56565" 
+                        Foreground="White" 
+                        BorderThickness="0" 
+                        Padding="12 5" 
+                        Margin="10 0 0 0"
+                        Cursor="Hand"
+                        Click="CloseButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
