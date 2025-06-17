@@ -149,17 +149,17 @@
                                        Foreground="#1a202c"/>
                             <TextBlock FontSize="14" Foreground="#4a5568" Margin="0 4 0 0">
                                 <Run Text="Groupe :"/>
-                                <Run Text="{Binding GroupeConcerne.NomDescriptifGroupe, FallbackValue='Chargement...'}" 
+                                <Run Text="{Binding GroupeConcerne.NomDescriptifGroupe, FallbackValue='Chargement...', Mode=OneWay}" 
                                      FontWeight="Bold"/>
                                 <Run Text=" • Matière :"/>
-                                <Run Text="{Binding GroupeConcerne.Matiere.NomMatiere, FallbackValue='...'}" 
+                                <Run Text="{Binding GroupeConcerne.Matiere.NomMatiere, FallbackValue='...', Mode=OneWay}" 
                                      FontWeight="Bold"/>
                             </TextBlock>
                             <TextBlock FontSize="12" Foreground="#718096" Margin="0 2 0 0">
                                 <Run Text="👨‍🏫 Professeur :"/>
-                                <Run Text="{Binding GroupeConcerne.Professeur.NomComplet, FallbackValue='...'}" FontWeight="SemiBold"/>
+                                <Run Text="{Binding GroupeConcerne.Professeur.NomComplet, FallbackValue='...', Mode=OneWay}" FontWeight="SemiBold"/>
                                 <Run Text=" • Rémunération :"/>
-                                <Run Text="{Binding PourcentageRemunerationFormate}" FontWeight="SemiBold"/>
+                                <Run Text="{Binding PourcentageRemunerationFormate, Mode=OneWay}" FontWeight="SemiBold"/>
                             </TextBlock>
                         </StackPanel>
                     </Grid>
@@ -247,7 +247,7 @@
                                                FontSize="12" 
                                                Foreground="#718096" 
                                                FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding MontantTotalCollecteFormate}" 
+                                    <TextBlock Text="{Binding MontantTotalCollecteFormate, Mode=OneWay}" 
                                                FontSize="18" FontWeight="Bold" 
                                                Foreground="#38a169"/>
                                 </StackPanel>
@@ -272,7 +272,7 @@
                                                FontSize="12" 
                                                Foreground="#718096" 
                                                FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding MontantProfesseurFormate}" 
+                                    <TextBlock Text="{Binding MontantProfesseurFormate, Mode=OneWay}" 
                                                FontSize="18" FontWeight="Bold" 
                                                Foreground="#3182ce"/>
                                 </StackPanel>
@@ -297,7 +297,7 @@
                                                FontSize="12" 
                                                Foreground="#718096" 
                                                FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding MontantAttenduFormate}" 
+                                    <TextBlock Text="{Binding MontantAttenduFormate, Mode=OneWay}" 
                                                FontSize="18" FontWeight="Bold" 
                                                Foreground="#dd6b20"/>
                                 </StackPanel>
@@ -322,9 +322,9 @@
                                                FontSize="12" 
                                                Foreground="#718096" 
                                                FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding MontantEnRetardFormate}" 
+                                    <TextBlock Text="{Binding MontantEnRetardFormate, Mode=OneWay}" 
                                                FontSize="18" FontWeight="Bold" 
-                                               Foreground="{Binding CouleurMontantEnRetard}"/>
+                                               Foreground="{Binding CouleurMontantEnRetard, Mode=OneWay}"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -347,9 +347,9 @@
                                                FontSize="12" 
                                                Foreground="#718096" 
                                                FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding ProfitCentreFormate}" 
+                                    <TextBlock Text="{Binding ProfitCentreFormate, Mode=OneWay}" 
                                                FontSize="18" FontWeight="Bold" 
-                                               Foreground="{Binding CouleurProfitCentre}"/>
+                                               Foreground="{Binding CouleurProfitCentre, Mode=OneWay}"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -376,8 +376,8 @@
                                                Foreground="#805ad5">
                                         <TextBlock.Text>
                                             <MultiBinding Converter="{x:Static local:MathConverter.Instance}" StringFormat="{}{0:F1}%">
-                                                <Binding Path="MontantTotalCollecte"/>
-                                                <Binding Path="MontantAttendu"/>
+                                                <Binding Path="MontantTotalCollecte" Mode="OneWay"/>
+                                                <Binding Path="MontantAttendu" Mode="OneWay"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -411,7 +411,7 @@
                                            Foreground="#2d3748"/>
                                 <TextBlock FontSize="12" Foreground="#718096">
                                     <Run Text="💰 Paiements reçus durant la période • "/>
-                                    <Run Text="{Binding PaiementsPeriode.Count}" FontWeight="Bold"/>
+                                    <Run Text="{Binding PaiementsPeriode.Count, Mode=OneWay}" FontWeight="Bold"/>
                                     <Run Text=" transactions"/>
                                 </TextBlock>
                             </StackPanel>
@@ -428,7 +428,7 @@
                                   Margin="0 10 0 0">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="📅 Date" 
-                                                    Binding="{Binding DatePaiement, StringFormat=dd/MM/yyyy}" 
+                                                    Binding="{Binding DatePaiement, StringFormat=dd/MM/yyyy, Mode=OneWay}" 
                                                     Width="100">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -440,7 +440,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="👤 Étudiant" 
-                                                    Binding="{Binding Etudiant.NomComplet}" 
+                                                    Binding="{Binding Etudiant.NomComplet, Mode=OneWay}" 
                                                     Width="180">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -453,7 +453,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="💰 Montant" 
-                                                    Binding="{Binding MontantTotalRecuTransaction, StringFormat=C}" 
+                                                    Binding="{Binding MontantTotalRecuTransaction, StringFormat=C, Mode=OneWay}" 
                                                     Width="120">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -467,7 +467,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="👥 Enregistré par" 
-                                                    Binding="{Binding UtilisateurEnregistrement.NomComplet}" 
+                                                    Binding="{Binding UtilisateurEnregistrement.NomComplet, Mode=OneWay}" 
                                                     Width="150">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -479,7 +479,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="📝 Notes" 
-                                                    Binding="{Binding Notes}" 
+                                                    Binding="{Binding Notes, Mode=OneWay}" 
                                                     Width="*">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -507,7 +507,7 @@
                             CornerRadius="8" Padding="15 10" Margin="0 0 10 0">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" Fill="#4ade80" Margin="0 0 10 0"/>
-                            <TextBlock Text="{Binding StatusMessage}" 
+                            <TextBlock Text="{Binding StatusMessage, Mode=OneWay}" 
                                        FontWeight="SemiBold" FontSize="13" 
                                        Foreground="White"/>
                         </StackPanel>

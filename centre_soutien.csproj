@@ -30,6 +30,8 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="PDFsharp" Version="6.2.0" />
+      <PackageReference Include="PDFSharp.Charting.netstandard" Version="1.3.1" />
     </ItemGroup>
 
 </Project>

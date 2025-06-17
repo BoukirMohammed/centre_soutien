@@ -6,8 +6,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using centre_soutien.Services; // Pour CurrentUserSession
+using centre_soutien.Services;
+using centre_soutien.Services.PDF; // Pour CurrentUserSession
 
 
 namespace centre_soutien.ViewModels
@@ -51,8 +53,11 @@ namespace centre_soutien.ViewModels
                 (UpdateEtudiantCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 (ArchiveEtudiantCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
+            
         }
+        private readonly IPdfExportService _pdfService;
 
+        public ICommand ExportPdfCommand { get; }
         // Champs pour le formulaire
         private string _nomInput = string.Empty;
         public string NomInput
@@ -131,6 +136,47 @@ namespace centre_soutien.ViewModels
             );            ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
 
             _ = LoadEtudiantsAsync();
+            
+            ExportPdfCommand = new RelayCommand(async () => await ExportToPdfAsync());
+
+        }
+        
+        private async Task ExportToPdfAsync()
+        {
+            try
+            {
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "Fichiers PDF (*.pdf)|*.pdf",
+                    DefaultExt = "pdf",
+                    FileName = $"Liste_Etudiants_{DateTime.Now:yyyyMMdd_HHmm}.pdf"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    StatusMessage = "Export PDF en cours...";
+            
+                    bool success = await _pdfService.ExportEtudiantsListAsync(
+                        Etudiants.ToList(), saveDialog.FileName);
+
+                    if (success)
+                    {
+                        StatusMessage = "Export PDF réussi !";
+                        MessageBox.Show("Export terminé avec succès !", "Export réussi", 
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        StatusMessage = "Erreur lors de l'export PDF";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Erreur : {ex.Message}";
+            }
+            
+            
         }
 
         public async Task LoadEtudiantsAsync()
