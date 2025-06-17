@@ -137,7 +137,7 @@ namespace centre_soutien.ViewModels
 
             _ = LoadEtudiantsAsync();
             
-            ExportPdfCommand = new RelayCommand(async () => await ExportToPdfAsync());
+            ExportPdfCommand = new RelayCommand(async param => await ExportToPdfAsync());
 
         }
         

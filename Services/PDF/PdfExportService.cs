@@ -27,10 +27,10 @@ namespace centre_soutien.Services.PDF
                     var page = document.AddPage();
                     var graphics = XGraphics.FromPdfPage(page);
                     
-                    // Définir les polices
-                    var titleFont = new XFont("Arial", 16, XFontStyle.Bold);
-                    var headerFont = new XFont("Arial", 10, XFontStyle.Bold);
-                    var textFont = new XFont("Arial", 9, XFontStyle.Regular);
+                    // Définir les polices (solution 1: sans style explicite)
+                    var titleFont = new XFont("Arial", 16, XFontStyleEx.Bold);
+                    var headerFont = new XFont("Arial", 10, XFontStyleEx.Bold);
+                    var textFont = new XFont("Arial", 9, XFontStyleEx.Regular);
 
                     double yPosition = 50;
 
@@ -68,7 +68,7 @@ namespace centre_soutien.Services.PDF
                 new XPoint(50, 30));
             
             // Sous-titre du rapport
-            graphics.DrawString(title, new XFont("Arial", 12, XFontStyle.Bold), 
+            graphics.DrawString(title, new XFont("Arial", 12, XFontStyleEx.Bold), 
                 XBrushes.White, new XPoint(50, 55));
 
             // Date et heure
@@ -168,7 +168,7 @@ namespace centre_soutien.Services.PDF
             // Ajouter le total à la fin
             yPosition += 10;
             graphics.DrawString($"Total: {etudiants.Count} étudiant(s)", 
-                new XFont("Arial", 10, XFontStyle.Bold), XBrushes.Black,
+                new XFont("Arial", 10, XFontStyleEx.Bold), XBrushes.Black,
                 new XPoint(startX, yPosition));
 
             // Numéro de page final
@@ -190,9 +190,9 @@ namespace centre_soutien.Services.PDF
                     var page = document.AddPage();
                     var graphics = XGraphics.FromPdfPage(page);
                     
-                    var titleFont = new XFont("Arial", 16, XFontStyle.Bold);
-                    var sectionFont = new XFont("Arial", 12, XFontStyle.Bold);
-                    var textFont = new XFont("Arial", 10, XFontStyle.Regular);
+                    var titleFont = new XFont("Arial", 16, XFontStyleEx.Bold);
+                    var sectionFont = new XFont("Arial", 12, XFontStyleEx.Bold);
+                    var textFont = new XFont("Arial", 10, XFontStyleEx.Regular);
 
                     double yPosition = 50;
 

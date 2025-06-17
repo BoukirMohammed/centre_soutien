@@ -6,39 +6,17 @@ using System.ComponentModel;          // Pour INotifyPropertyChanged
 using System.Runtime.CompilerServices; // Pour CallerMemberName
 using System.Threading.Tasks;         // Pour Task
 using System.Windows.Input;           // Pour ICommand
-using System.Linq;                    // Pour des opérations LINQ sur la collection si besoin
+using System.Linq;
+using centre_soutien.Commands; // Pour des opérations LINQ sur la collection si besoin
 using centre_soutien.DataAccess.Repositories;
 using centre_soutien.Services;
+using centre_soutien.Helpers;
 
 namespace centre_soutien.ViewModels {// Ajuste le namespace
 
     // Classe de base pour ICommand (RelayCommand)
     // Tu peux mettre cette classe dans un dossier Helpers/ ou Commands/
     // Si tu l'as déjà créée ailleurs, tu peux supprimer cette implémentation ici.
-    public class RelayCommand : ICommand
-    {
-        private readonly Action<object> _execute;
-        private readonly Predicate<object> _canExecute;
-        // La commande d'archivage utilise CanUserArchive dans son prédicat CanExecute
-    
-
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
-        public void Execute(object parameter) => _execute(parameter);
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-    }
-
     public class SalleViewModel : INotifyPropertyChanged
     {
 
@@ -131,6 +109,7 @@ namespace centre_soutien.ViewModels {// Ajuste le namespace
             );
             ClearFormCommand = new RelayCommand(param => ClearInputFieldsAndSelection());
 
+            
             // Charger les salles initialement au démarrage du ViewModel
             _ = LoadSallesAsync(); // Lancer en arrière-plan sans attendre ici (fire and forget)
         }

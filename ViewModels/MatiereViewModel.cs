@@ -6,13 +6,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using centre_soutien.Commands;
 using centre_soutien.Services;
 
 namespace centre_soutien.ViewModels
 {
-    // Si RelayCommand n'est pas dans un fichier global, tu peux le copier ici
-    // ou mieux, le mettre dans Helpers/ et ajouter un using.
-    // Pour cet exemple, je suppose qu'il est accessible (par exemple, défini dans SalleViewModel ou un fichier commun).
+
 
     public class MatiereViewModel : INotifyPropertyChanged
     {
