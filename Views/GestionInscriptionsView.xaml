@@ -309,6 +309,11 @@
                     <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="#15000000" Opacity="0.2"/>
                 </Border.Effect>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="📄 Exporter PDF" 
+                            Style="{StaticResource PrimaryButton}"
+                            Background="{StaticResource SuccessGradient}"
+                            Command="{Binding ExportPdfCommand}"
+                            Margin="0 0 10 0"/>
                     <Button Content="🔄 Actualiser" 
                             Style="{StaticResource PrimaryButton}"
                             Background="{StaticResource InfoGradient}"

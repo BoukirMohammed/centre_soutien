@@ -25,7 +25,7 @@ namespace centre_soutien.Views
                     if (viewModel.UpdateEtudiantCommand.CanExecute(null))
                     {
                         viewModel.UpdateEtudiantCommand.Execute(null);
-                        
+
                         // Fermer le formulaire après modification réussie
                         FormPanel.Visibility = Visibility.Collapsed;
                         AddStudentButton.Content = "➕ Ajouter un Étudiant";
@@ -37,7 +37,7 @@ namespace centre_soutien.Views
                     if (viewModel.AddEtudiantCommand.CanExecute(null))
                     {
                         viewModel.AddEtudiantCommand.Execute(null);
-                        
+
                         // Fermer le formulaire après ajout réussi
                         FormPanel.Visibility = Visibility.Collapsed;
                         AddStudentButton.Content = "➕ Ajouter un Étudiant";
@@ -53,7 +53,7 @@ namespace centre_soutien.Views
             {
                 FormPanel.Visibility = Visibility.Visible;
                 AddStudentButton.Content = "❌ Fermer le Formulaire";
-                
+
                 // Vider le formulaire pour un nouvel étudiant
                 if (DataContext is EtudiantViewModel viewModel)
                 {
@@ -72,7 +72,7 @@ namespace centre_soutien.Views
         {
             FormPanel.Visibility = Visibility.Collapsed;
             AddStudentButton.Content = "➕ Ajouter un Étudiant";
-            
+
             // Vider le formulaire
             if (DataContext is EtudiantViewModel viewModel)
             {
@@ -97,17 +97,17 @@ namespace centre_soutien.Views
                 }
                 else
                 {
-                    MessageBox.Show("Impossible de récupérer les informations de l'étudiant sélectionné.", 
-                        "Erreur", 
-                        MessageBoxButton.OK, 
+                    MessageBox.Show("Impossible de récupérer les informations de l'étudiant sélectionné.",
+                        "Erreur",
+                        MessageBoxButton.OK,
                         MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de l'ouverture des détails : {ex.Message}", 
-                    "Erreur", 
-                    MessageBoxButton.OK, 
+                MessageBox.Show($"Erreur lors de l'ouverture des détails : {ex.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }
@@ -121,7 +121,7 @@ namespace centre_soutien.Views
                 {
                     // Sélectionner l'étudiant (cela va automatiquement remplir le formulaire grâce à ton ViewModel)
                     viewModel.SelectedEtudiant = etudiant;
-                    
+
                     // Afficher le formulaire
                     FormPanel.Visibility = Visibility.Visible;
                     AddStudentButton.Content = "❌ Fermer le Formulaire";
@@ -129,43 +129,113 @@ namespace centre_soutien.Views
             }
         }
 
-        // Supprimer un étudiant
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Archiver un étudiant (suppression logique) - accessible à tous les utilisateurs
+        /// </summary>
+        private void ArchiveButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.Tag is Etudiant etudiant)
             {
                 var result = MessageBox.Show(
-                    $"⚠️ ATTENTION ⚠️\n\n" +
-                    $"Êtes-vous absolument sûr de vouloir supprimer l'étudiant :\n\n" +
+                    $"📦 Confirmation d'archivage\n\n" +
+                    $"Voulez-vous archiver l'étudiant :\n\n" +
                     $"👤 {etudiant.Nom} {etudiant.Prenom}\n" +
                     $"🏫 {etudiant.Lycee}\n\n" +
-                    $"⚠️ Cette action est irréversible !", 
-                    "Confirmation de suppression", 
-                    MessageBoxButton.YesNo, 
-                    MessageBoxImage.Warning);
+                    $"⚠️ L'étudiant sera masqué mais ses données seront conservées.",
+                    "Archivage d'étudiant",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
                 {
                     if (DataContext is EtudiantViewModel viewModel)
                     {
-                        // Pour l'instant, on utilise l'archivage comme suppression logique
-                        // Tu peux créer une vraie commande de suppression plus tard
                         viewModel.SelectedEtudiant = etudiant;
-                        
+
                         if (viewModel.ArchiveEtudiantCommand.CanExecute(null))
                         {
                             viewModel.ArchiveEtudiantCommand.Execute(null);
-                            MessageBox.Show($"✅ L'étudiant {etudiant.Prenom} {etudiant.Nom} a été archivé (suppression logique).", 
-                                          "Suppression réussie", 
-                                          MessageBoxButton.OK, 
-                                          MessageBoxImage.Information);
+                            MessageBox.Show($"✅ L'étudiant {etudiant.Prenom} {etudiant.Nom} a été archivé avec succès.",
+                                "Archivage réussi",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                         }
                         else
                         {
-                            MessageBox.Show("❌ Impossible de supprimer cet étudiant.\nIl pourrait avoir des inscriptions actives.", 
-                                          "Suppression impossible", 
-                                          MessageBoxButton.OK, 
-                                          MessageBoxImage.Warning);
+                            MessageBox.Show(
+                                "❌ Impossible d'archiver cet étudiant.\nIl pourrait avoir des inscriptions actives.",
+                                "Archivage impossible",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Supprimer définitivement un étudiant - accessible seulement aux administrateurs
+        /// </summary>
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is Etudiant etudiant)
+            {
+                // Vérification des permissions
+                if (DataContext is EtudiantViewModel viewModel && !viewModel.CanUserArchive)
+                {
+                    MessageBox.Show(
+                        "❌ Vous n'avez pas les droits nécessaires pour supprimer définitivement un étudiant.",
+                        "Accès refusé",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    $"⚠️ SUPPRESSION DÉFINITIVE ⚠️\n\n" +
+                    $"ATTENTION : Cette action est IRRÉVERSIBLE !\n\n" +
+                    $"Êtes-vous absolument sûr de vouloir supprimer définitivement :\n\n" +
+                    $"👤 {etudiant.Nom} {etudiant.Prenom}\n" +
+                    $"🏫 {etudiant.Lycee}\n\n" +
+                    $"💀 Toutes les données seront perdues à jamais !",
+                    "SUPPRESSION DÉFINITIVE",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Error);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Double confirmation pour les suppressions définitives
+                    var secondConfirmation = MessageBox.Show(
+                        "🚨 DERNIÈRE CHANCE 🚨\n\n" +
+                        "Confirmez-vous vraiment cette suppression définitive ?\n\n" +
+                        "Cette action ne peut PAS être annulée !",
+                        "Confirmation finale",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Stop);
+
+                    if (secondConfirmation == MessageBoxResult.Yes)
+                    {
+                        if (DataContext is EtudiantViewModel vm)
+                        {
+                            vm.SelectedEtudiant = etudiant;
+
+                            if (vm.DeleteEtudiantCommand.CanExecute(null))
+                            {
+                                vm.DeleteEtudiantCommand.Execute(null);
+                                MessageBox.Show(
+                                    $"💀 L'étudiant {etudiant.Prenom} {etudiant.Nom} a été supprimé définitivement.",
+                                    "Suppression réussie",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show(
+                                    "❌ Impossible de supprimer cet étudiant.\nIl pourrait avoir des contraintes de base de données.",
+                                    "Suppression impossible",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                            }
                         }
                     }
                 }

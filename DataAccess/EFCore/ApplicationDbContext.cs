@@ -76,9 +76,17 @@ namespace centre_soutien.DataAccess // Ajuste le namespace si nécessaire
                 entity.HasKey(e => e.IDEtudiant);
                 entity.Property(e => e.Nom).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Prenom).IsRequired().HasMaxLength(100);
-                entity.HasIndex(e => e.Telephone).IsUnique().HasFilter("[Telephone] IS NOT NULL"); // Unique si non null
-                // Pour les dates stockées en TEXT, EF Core les gère bien comme string.
-                // Si tu utilisais DateTime, tu pourrais spécifier HasConversion ou HasColumnType.
+                // Configuration pour le Code
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(20);
+    
+                entity.HasIndex(e => e.Code)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Etudiants_Code_Unique");
+    
+                entity.HasIndex(e => e.Telephone).IsUnique().HasFilter("[Telephone] IS NOT NULL");
+
             });
 
             // Professeurs

@@ -16,6 +16,8 @@ namespace centre_soutien.Models
         public string DateInscriptionSysteme { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // Initialisé
         public string? Notes { get; set; }          // Nullable
         public bool EstArchive { get; set; }
+        public string Code { get; set; } = string.Empty; // Code unique pour l'étudiant
+
 
         // Navigation: Un étudiant peut avoir plusieurs inscriptions et plusieurs paiements
         public virtual ICollection<Inscription> Inscriptions { get; set; } = new List<Inscription>();

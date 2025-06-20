@@ -53,6 +53,11 @@ namespace centre_soutien.Migrations
                     b.Property<string>("Adresse")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("DateInscriptionSysteme")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -83,6 +88,10 @@ namespace centre_soutien.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("IDEtudiant");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Etudiants_Code_Unique");
 
                     b.HasIndex("Telephone")
                         .IsUnique()
