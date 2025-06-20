@@ -70,23 +70,22 @@ namespace centre_soutien.DataAccess // Ajuste le namespace si nécessaire
                 }
             );
 
-            // Etudiants
             modelBuilder.Entity<Etudiant>(entity =>
             {
                 entity.HasKey(e => e.IDEtudiant);
                 entity.Property(e => e.Nom).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Prenom).IsRequired().HasMaxLength(100);
+    
                 // Configuration pour le Code
                 entity.Property(e => e.Code)
                     .IsRequired()
                     .HasMaxLength(20);
-    
+
                 entity.HasIndex(e => e.Code)
                     .IsUnique()
                     .HasDatabaseName("IX_Etudiants_Code_Unique");
-    
-                entity.HasIndex(e => e.Telephone).IsUnique().HasFilter("[Telephone] IS NOT NULL");
 
+                entity.HasIndex(e => e.Telephone).IsUnique().HasFilter("[Telephone] IS NOT NULL");
             });
 
             // Professeurs
